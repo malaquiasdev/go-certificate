@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"ekoa-certificate-generator/pkg/utils"
 	"encoding/json"
-	"log"
 	"net/http"
 	"io"
 )
@@ -48,24 +47,24 @@ func Login(username string, password string) (Auth, error) {
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 	if err != nil {
-		log.Fatal(err)
-		panic(err)
+		return Auth{}, err
 	}
 
+
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", apiKey)
+	req.Header.Set("api_key", apiKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return Auth{}, err
 	}
 
 	defer resp.Body.Close()
 
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
-		panic(err)
+		return Auth{}, err
 	}
 
 	var response Auth
@@ -73,6 +72,6 @@ func Login(username string, password string) (Auth, error) {
 	if err != nil {
 	  return Auth{}, err
 	}
-  
+
 	return response, nil
 }

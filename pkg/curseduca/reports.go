@@ -61,8 +61,8 @@ func FindEnrollments(auth Auth) (ReportEnrollment, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", apiKey)
-	req.Header.Set("Authorization", "Bearer"+auth.AccessToken)
+	req.Header.Set("api_key", apiKey)
+	req.Header.Set("Authorization", "Bearer " + auth.AccessToken)
 
 	resp, err := client.Do(req)
 	if err != nil {
