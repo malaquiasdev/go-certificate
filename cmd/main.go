@@ -17,7 +17,7 @@ func main() {
 	}
 	log.Printf("INFO: token: %+v\n", auth.AccessToken)
 
-	reports, err := curseduca.FindEnrollments(auth)
+	reports, err := curseduca.FindReportEnrollment(auth)
 
 	if err != nil {
 		log.Fatal(err)
