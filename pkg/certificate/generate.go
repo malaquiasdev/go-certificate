@@ -36,12 +36,8 @@ func Generate(imgPath string, field Field) (image.Image, error) {
 		return nil, err
 	}
 
-	// x := float64(imgWidth / 2)
-	// y := float64((imgHeight / 2) - 80)
-	// maxWidth := float64(imgWidth) - 60.0
 	dc.SetColor(color.Black)
 	dc.DrawString(field.Text.Value, float64(field.Text.PositionX), float64(field.Text.PositionY))
-	// dc.DrawStringWrapped(field.Text.Value, x, y, 0.5, 0.5, maxWidth, 1.5, gg.AlignCenter)
-
+	
 	return dc.Image(), nil
 }
