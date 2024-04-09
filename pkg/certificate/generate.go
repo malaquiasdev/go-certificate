@@ -20,7 +20,7 @@ type FieldText struct {
 	Value     string
 }
 
-func Generate(imgPath string, field Field) (image.Image, error) {
+func Generate(imgPath string, fields []Field) (image.Image, error) {
 	bgImage, err := gg.LoadImage(imgPath)
 	if err != nil {
 		return nil, err
@@ -32,12 +32,15 @@ func Generate(imgPath string, field Field) (image.Image, error) {
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(bgImage, 0, 0)
 
-	if err := dc.LoadFontFace(field.Text.FontPath, field.Text.FontSize); err != nil {
-		return nil, err
+	for _, field := range fields {
+
+		if err := dc.LoadFontFace(field.Text.FontPath, field.Text.FontSize); err != nil {
+			return nil, err
+		}
+
+		dc.SetColor(color.Black)
+		dc.DrawString(field.Text.Value, float64(field.Text.PositionX), float64(field.Text.PositionY))
 	}
 
-	dc.SetColor(color.Black)
-	dc.DrawString(field.Text.Value, float64(field.Text.PositionX), float64(field.Text.PositionY))
-	
 	return dc.Image(), nil
 }

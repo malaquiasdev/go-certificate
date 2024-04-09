@@ -1,3 +1,4 @@
+outimage.jpeg
 /bin/*
 !/bin/.gitkeep
 src/vendor
