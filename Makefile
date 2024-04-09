@@ -2,7 +2,7 @@ export CGO_ENABLED=0
 export GOOS=linux
 export GOARCH=amd64
 
-build:
-	- cd handlers/ && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../bin/main *.go
-	- chmod +x bin/main
-	- cd bin/ && zip -j main.zip main
+build-checkNewCertificates:
+	- cd handlers/checkNewCertificates && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../bin/bootstrap *.go
+	- chmod +x bin/bootstrap
+	- cd bin/ && zip -j check_new_certificates_lambda.zip bootstrap

@@ -1,0 +1,11 @@
+variable "aws_region" { type = string }
+variable "aws_account_number" { type = string }
+variable "access_key" { type = string }
+variable "secret_key" { type = string }
+variable "project_name" { type = string }
+variable "check_new_certificates_source_code_hash" { type = string }
+variable "prof_cursoeduca_username" { type = string }
+variable "prof_cursoeduca_password" { type = string }
+variable "prof_cursoeduca_base_url" { type = string }
+variable "cursoeduca_api_key" { type = string }
+variable "class_cursoeduca_base_url" { type = string }
