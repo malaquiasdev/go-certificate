@@ -1,5 +1,7 @@
 # ekoa-certificate-generator
 
+![Layered Architecture](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/architecture/ekoa-certificate-generator.drawio.png?raw=true)
+
 ## Setup
 
 ### Prerequisites 📝
