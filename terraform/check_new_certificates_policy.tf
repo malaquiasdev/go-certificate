@@ -1,4 +1,4 @@
-resource "aws_iam_role" "check_new_certificates_policy" {
+resource "aws_iam_role" "check_new_certificates_role" {
   name = "${var.project_name}-role"
 
   assume_role_policy = <<EOF
@@ -16,4 +16,33 @@ resource "aws_iam_role" "check_new_certificates_policy" {
   ]
 }
 EOF
+}
+
+resource "aws_iam_policy" "check_new_certificates_policy" {
+  name        = format("%s-trigger-transcoder", "${var.project_name}-policy")
+  description = "Allow to access base resources and trigger transcoder"
+  policy      = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "SomeVeryDefaultAndOpenActions",
+            "Effect": "Allow",
+            "Action": [
+                "logs:*",
+                "dynamodb:*"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:*",
+                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}"
+            ]
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "dynamodb" {
+  policy_arn = aws_iam_policy.check_new_certificates_policy.arn
+  role       = aws_iam_role.check_new_certificates_role.name
 }

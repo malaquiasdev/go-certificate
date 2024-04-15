@@ -33,4 +33,6 @@
 
 ## Model NoSQL Workbench Export
 
+![](doc/dynamodb/model.png)
+
 [mode.json](doc/dynamodb/model.json)
