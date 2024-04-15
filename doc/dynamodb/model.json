@@ -1,0 +1,978 @@
+{
+  "ModelName": "reports",
+  "ModelMetadata": {
+    "Author": "",
+    "DateCreated": "Apr 10, 2024, 02:23 PM",
+    "DateLastModified": "Apr 10, 2024, 03:17 PM",
+    "Description": "",
+    "AWSService": "Amazon DynamoDB",
+    "Version": "3.0"
+  },
+  "DataModel": [
+    {
+      "TableName": "certificate",
+      "KeyAttributes": {
+        "PartitionKey": {
+          "AttributeName": "PK",
+          "AttributeType": "S"
+        },
+        "SortKey": {
+          "AttributeName": "SK",
+          "AttributeType": "S"
+        }
+      },
+      "NonKeyAttributes": [
+        {
+          "AttributeName": "startedAt",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "finishedAt",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "situationId",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "progress",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "expiresAt",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "expirationEnabled",
+          "AttributeType": "BOOL"
+        },
+        {
+          "AttributeName": "integration",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "contentId",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "contentSlug",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "contentTitle",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "memberId",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "memberName",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "memberSlug",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "memberEmail",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "memeberGroupIds",
+          "AttributeType": "L"
+        },
+        {
+          "AttributeName": "reportId",
+          "AttributeType": "N"
+        },
+        {
+          "AttributeName": "createAt",
+          "AttributeType": "S"
+        },
+        {
+          "AttributeName": "url",
+          "AttributeType": "S"
+        }
+      ],
+      "GlobalSecondaryIndexes": [
+        {
+          "IndexName": "GS1PK",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "reportId",
+              "AttributeType": "N"
+            },
+            "SortKey": {
+              "AttributeName": "PK",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        },
+        {
+          "IndexName": "GS2PK",
+          "KeyAttributes": {
+            "PartitionKey": {
+              "AttributeName": "memberEmail",
+              "AttributeType": "S"
+            },
+            "SortKey": {
+              "AttributeName": "PK",
+              "AttributeType": "S"
+            }
+          },
+          "Projection": {
+            "ProjectionType": "ALL"
+          }
+        }
+      ],
+      "TableData": [
+        {
+          "PK": {
+            "S": "CERTIFICATE#17661d42-11c2-49ef-a809-3ab615bbd185"
+          },
+          "SK": {
+            "S": "CERTIFICATE#5669ce81-644b-466f-a93d-39951577c6dd"
+          },
+          "startedAt": {
+            "S": "2024-04-17T12:21:26.067Z"
+          },
+          "finishedAt": {
+            "S": "2024-05-12T14:33:51.847Z"
+          },
+          "situationId": {
+            "N": "2729137468866560"
+          },
+          "progress": {
+            "N": "4476352187072512"
+          },
+          "expiresAt": {
+            "S": "2023-08-21T16:28:15.538Z"
+          },
+          "expirationEnabled": {
+            "BOOL": false
+          },
+          "integration": {
+            "S": "\"MAQz\"l\\8W"
+          },
+          "contentId": {
+            "N": "6124534212067328"
+          },
+          "contentSlug": {
+            "S": "PzhU-,krZ%"
+          },
+          "contentTitle": {
+            "S": ".2qs-P7kd<"
+          },
+          "memberId": {
+            "N": "1898927668330496"
+          },
+          "memberName": {
+            "S": "Reginald Dickinson"
+          },
+          "memberSlug": {
+            "S": "Maudie20"
+          },
+          "memberEmail": {
+            "S": "Zoila61@yahoo.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "1957391671230464"
+          },
+          "createAt": {
+            "S": "2023-05-15T11:06:11.539Z"
+          },
+          "url": {
+            "S": "https://squiggly-min.net"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#8830a2c5-9584-4ba1-919c-3e58261f626f"
+          },
+          "SK": {
+            "S": "CERTIFICATE#752ad244-394e-45e5-9536-76906a6cc7a2"
+          },
+          "startedAt": {
+            "S": "2024-09-24T20:17:02.501Z"
+          },
+          "finishedAt": {
+            "S": "2023-11-27T11:51:30.230Z"
+          },
+          "situationId": {
+            "N": "6301130671783936"
+          },
+          "progress": {
+            "N": "938798684831744"
+          },
+          "expiresAt": {
+            "S": "2024-09-24T01:17:23.400Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "/o2uUC#C\"D"
+          },
+          "contentId": {
+            "N": "8550704524296192"
+          },
+          "contentSlug": {
+            "S": "U{L||L2_s4"
+          },
+          "contentTitle": {
+            "S": "]V}=}nO&[_"
+          },
+          "memberId": {
+            "N": "2909370656489472"
+          },
+          "memberName": {
+            "S": "Noel Yundt"
+          },
+          "memberSlug": {
+            "S": "Stephen28"
+          },
+          "memberEmail": {
+            "S": "Fermin61@yahoo.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "2311107588915200"
+          },
+          "createAt": {
+            "S": "2024-03-01T09:41:52.033Z"
+          },
+          "url": {
+            "S": "https://some-bank.info"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#46829bff-29d5-46b4-a284-8973a4cae38a"
+          },
+          "SK": {
+            "S": "CERTIFICATE#0d2e814e-0779-454d-a409-458b5775d971"
+          },
+          "startedAt": {
+            "S": "2023-06-02T09:56:42.396Z"
+          },
+          "finishedAt": {
+            "S": "2024-10-25T15:41:52.870Z"
+          },
+          "situationId": {
+            "N": "4205370453000192"
+          },
+          "progress": {
+            "N": "6233340772352000"
+          },
+          "expiresAt": {
+            "S": "2024-02-17T00:42:28.787Z"
+          },
+          "expirationEnabled": {
+            "BOOL": false
+          },
+          "integration": {
+            "S": "^.7qF+DiF:"
+          },
+          "contentId": {
+            "N": "5796688232972288"
+          },
+          "contentSlug": {
+            "S": "iG<YNufY6j"
+          },
+          "contentTitle": {
+            "S": "^=ptz\"CWNF"
+          },
+          "memberId": {
+            "N": "5069872346169344"
+          },
+          "memberName": {
+            "S": "Frances Pfeffer"
+          },
+          "memberSlug": {
+            "S": "Chasity.Yost"
+          },
+          "memberEmail": {
+            "S": "Melissa29@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "1630075380301824"
+          },
+          "createAt": {
+            "S": "2025-03-11T00:59:41.981Z"
+          },
+          "url": {
+            "S": "https://wise-execution.com"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#b596232a-06a1-4766-a73f-6e3eba3a9a07"
+          },
+          "SK": {
+            "S": "CERTIFICATE#9fd5d7d2-b18b-43ff-b628-9cbf33c07356"
+          },
+          "startedAt": {
+            "S": "2023-07-23T23:24:52.357Z"
+          },
+          "finishedAt": {
+            "S": "2023-06-02T01:17:11.404Z"
+          },
+          "situationId": {
+            "N": "6424857208160256"
+          },
+          "progress": {
+            "N": "2398158959149056"
+          },
+          "expiresAt": {
+            "S": "2023-12-09T11:49:45.290Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "Fn(9%)8rN!"
+          },
+          "contentId": {
+            "N": "6825450242310144"
+          },
+          "contentSlug": {
+            "S": "gG}u5[fwV,"
+          },
+          "contentTitle": {
+            "S": "#m;rVBc$hI"
+          },
+          "memberId": {
+            "N": "7438949632966656"
+          },
+          "memberName": {
+            "S": "Lucia Jacobi"
+          },
+          "memberSlug": {
+            "S": "Keira_Witting88"
+          },
+          "memberEmail": {
+            "S": "Randi_Lind68@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "2658445169786880"
+          },
+          "createAt": {
+            "S": "2023-07-26T19:41:49.309Z"
+          },
+          "url": {
+            "S": "https://nocturnal-fishbone.info/"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#7be83216-c000-4a81-a3eb-59bb9627731f"
+          },
+          "SK": {
+            "S": "CERTIFICATE#b4820217-0f30-4bf7-86d0-fb450a027693"
+          },
+          "startedAt": {
+            "S": "2024-05-07T22:17:53.240Z"
+          },
+          "finishedAt": {
+            "S": "2024-03-30T11:52:06.465Z"
+          },
+          "situationId": {
+            "N": "4760470785359872"
+          },
+          "progress": {
+            "N": "8214201833095168"
+          },
+          "expiresAt": {
+            "S": "2023-09-16T11:03:17.514Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "A=6\"o6l@Zq"
+          },
+          "contentId": {
+            "N": "2982384544776192"
+          },
+          "contentSlug": {
+            "S": "dKvl<C.:VY"
+          },
+          "contentTitle": {
+            "S": "^NU!>\\R&4O"
+          },
+          "memberId": {
+            "N": "6635737738903552"
+          },
+          "memberName": {
+            "S": "Mr. Lance Rodriguez"
+          },
+          "memberSlug": {
+            "S": "Yasmin_Grady"
+          },
+          "memberEmail": {
+            "S": "Giuseppe89@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "1534413710032896"
+          },
+          "createAt": {
+            "S": "2023-08-26T20:01:30.723Z"
+          },
+          "url": {
+            "S": "https://thick-kick-off.info/"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#100946c0-b60b-4e61-b532-3a1beed439f2"
+          },
+          "SK": {
+            "S": "CERTIFICATE#fe6e2569-abaa-4a6c-a326-480edb582711"
+          },
+          "startedAt": {
+            "S": "2023-08-31T18:27:03.714Z"
+          },
+          "finishedAt": {
+            "S": "2025-01-21T07:41:56.441Z"
+          },
+          "situationId": {
+            "N": "7621968331276288"
+          },
+          "progress": {
+            "N": "6384140043681792"
+          },
+          "expiresAt": {
+            "S": "2024-10-15T13:51:37.332Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "yV)Yo;]Tk@"
+          },
+          "contentId": {
+            "N": "863878351159296"
+          },
+          "contentSlug": {
+            "S": "_PR1GQs@wo"
+          },
+          "contentTitle": {
+            "S": "<3Pm6s\"drF"
+          },
+          "memberId": {
+            "N": "3132116124565504"
+          },
+          "memberName": {
+            "S": "Derrick Paucek V"
+          },
+          "memberSlug": {
+            "S": "Carissa_Dooley18"
+          },
+          "memberEmail": {
+            "S": "Jared.Krajcik@yahoo.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "6092454306512896"
+          },
+          "createAt": {
+            "S": "2024-04-08T08:40:52.923Z"
+          },
+          "url": {
+            "S": "https://tough-borrowing.net/"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#813aba04-126a-4499-a08f-9bdd417643df"
+          },
+          "SK": {
+            "S": "CERTIFICATE#71b7b80f-226a-4391-936f-44e16f96bd55"
+          },
+          "startedAt": {
+            "S": "2024-06-05T20:11:43.455Z"
+          },
+          "finishedAt": {
+            "S": "2024-08-16T13:50:54.656Z"
+          },
+          "situationId": {
+            "N": "7433975530258432"
+          },
+          "progress": {
+            "N": "7775420927705088"
+          },
+          "expiresAt": {
+            "S": "2023-05-08T11:16:24.296Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "Emx2=+|B\"6"
+          },
+          "contentId": {
+            "N": "4197038099005440"
+          },
+          "contentSlug": {
+            "S": "FH%9fXK0wK"
+          },
+          "contentTitle": {
+            "S": ".#;{kQ[ev9"
+          },
+          "memberId": {
+            "N": "8181834781294592"
+          },
+          "memberName": {
+            "S": "Patsy Kihn"
+          },
+          "memberSlug": {
+            "S": "Itzel27"
+          },
+          "memberEmail": {
+            "S": "Jaime.Welch8@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "4467059238895616"
+          },
+          "createAt": {
+            "S": "2023-08-28T06:19:44.442Z"
+          },
+          "url": {
+            "S": "https://tattered-batting.name"
+          }
+        },
+        {
+          "PK": {
+            "S": "e68b2591-a16d-4db1-9631-1CERTIFICATE#8b7ac7250ca"
+          },
+          "SK": {
+            "S": "CERTIFICATE#2db0b7bd-316b-4df4-be1e-04f49f86f4dc"
+          },
+          "startedAt": {
+            "S": "2024-06-05T14:52:10.816Z"
+          },
+          "finishedAt": {
+            "S": "2024-12-30T05:41:54.193Z"
+          },
+          "situationId": {
+            "N": "4887905377976320"
+          },
+          "progress": {
+            "N": "7969197512458240"
+          },
+          "expiresAt": {
+            "S": "2025-02-01T03:21:01.984Z"
+          },
+          "expirationEnabled": {
+            "BOOL": false
+          },
+          "integration": {
+            "S": "}DY=hGbRU^"
+          },
+          "contentId": {
+            "N": "1220555046912000"
+          },
+          "contentSlug": {
+            "S": ".&IkS>6#qg"
+          },
+          "contentTitle": {
+            "S": "PhFUov=+C5"
+          },
+          "memberId": {
+            "N": "7226111391956992"
+          },
+          "memberName": {
+            "S": "Maurice Shields"
+          },
+          "memberSlug": {
+            "S": "Merle.Daniel53"
+          },
+          "memberEmail": {
+            "S": "Karson.Rath41@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "5322220616286208"
+          },
+          "createAt": {
+            "S": "2024-05-21T19:55:39.476Z"
+          },
+          "url": {
+            "S": "https://blushing-cradle.com/"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#859064d8-1c14-45db-8889-690245fd610a"
+          },
+          "SK": {
+            "S": "CERTIFICATE#cafdaecc-2cb1-4695-8c75-8a832a7e7f72"
+          },
+          "startedAt": {
+            "S": "2024-07-22T21:27:56.267Z"
+          },
+          "finishedAt": {
+            "S": "2024-12-13T15:29:47.517Z"
+          },
+          "situationId": {
+            "N": "100927998525440"
+          },
+          "progress": {
+            "N": "8637386544119808"
+          },
+          "expiresAt": {
+            "S": "2024-04-18T09:35:53.262Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "ME6nCw>py!"
+          },
+          "contentId": {
+            "N": "1605813053423616"
+          },
+          "contentSlug": {
+            "S": "^9FE>FdsRi"
+          },
+          "contentTitle": {
+            "S": "S|wE?b5Rpd"
+          },
+          "memberId": {
+            "N": "4696388522737664"
+          },
+          "memberName": {
+            "S": "Kirk Gleason"
+          },
+          "memberSlug": {
+            "S": "Tiara70"
+          },
+          "memberEmail": {
+            "S": "Karlie26@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "7496094634213376"
+          },
+          "createAt": {
+            "S": "2024-12-27T07:51:06.889Z"
+          },
+          "url": {
+            "S": "https://growing-point.name"
+          }
+        },
+        {
+          "PK": {
+            "S": "CERTIFICATE#d9763795-4aed-4c7b-8b83-cf2295db2e04"
+          },
+          "SK": {
+            "S": "CERTIFICATE#012bd032-2b28-4c4a-ad5a-d867ddd626e6"
+          },
+          "startedAt": {
+            "S": "2024-06-01T02:55:44.614Z"
+          },
+          "finishedAt": {
+            "S": "2024-02-24T23:51:12.212Z"
+          },
+          "situationId": {
+            "N": "2845732159619072"
+          },
+          "progress": {
+            "N": "8472611740712960"
+          },
+          "expiresAt": {
+            "S": "2024-10-06T06:29:49.869Z"
+          },
+          "expirationEnabled": {
+            "BOOL": true
+          },
+          "integration": {
+            "S": "oG?eI(ts#C"
+          },
+          "contentId": {
+            "N": "3682974604197888"
+          },
+          "contentSlug": {
+            "S": "3\\Z:Sh1n@S"
+          },
+          "contentTitle": {
+            "S": "mJ\"Ic*lRzW"
+          },
+          "memberId": {
+            "N": "4616003178725376"
+          },
+          "memberName": {
+            "S": "Ida Murray"
+          },
+          "memberSlug": {
+            "S": "Lilliana.Schinner"
+          },
+          "memberEmail": {
+            "S": "Graham_Dickens95@gmail.com"
+          },
+          "memeberGroupIds": {
+            "L": [
+              {
+                "S": "Cookies"
+              },
+              {
+                "S": "Coffee"
+              },
+              {
+                "N": "3.14159"
+              }
+            ]
+          },
+          "reportId": {
+            "N": "5244219482439680"
+          },
+          "createAt": {
+            "S": "2023-04-12T13:25:52.314Z"
+          },
+          "url": {
+            "S": "https://energetic-encyclopedia.info"
+          }
+        }
+      ],
+      "DataAccess": {
+        "MySql": {}
+      },
+      "SampleDataFormats": {
+        "ENROLLMENTS#": [
+          "dataTypes",
+          "String"
+        ],
+        "FINISHED_AT": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "startedAt": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "ENROLLMENTS#<curseducaId>": [
+          "dataTypes",
+          "Int"
+        ],
+        "finishedAt": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "situationId": [
+          "Int"
+        ],
+        "progress": [
+          "Int"
+        ],
+        "expiresAt": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "integration": [
+          "dataTypes",
+          "String"
+        ],
+        "contentId": [
+          "Int"
+        ],
+        "contentSlug": [
+          "dataTypes",
+          "String"
+        ],
+        "contentTitle": [
+          "dataTypes",
+          "String"
+        ],
+        "memberId": [
+          "Int"
+        ],
+        "memberName": [
+          "identifiers",
+          "Full name"
+        ],
+        "memberSlug": [
+          "identifiers",
+          "Username"
+        ],
+        "memberEmail": [
+          "identifiers",
+          "Email"
+        ],
+        "curseducaId": [
+          "Int"
+        ],
+        "CERTIFICATE#<id>": [
+          "identifiers",
+          "UUID"
+        ],
+        "createAt": [
+          "date",
+          "ISO 8601 date and time"
+        ],
+        "PK": [
+          "identifiers",
+          "UUID"
+        ],
+        "SK": [
+          "identifiers",
+          "UUID"
+        ],
+        "reportId": [
+          "Int"
+        ],
+        "url": [
+          "identifiers",
+          "URL"
+        ]
+      },
+      "BillingMode": "PROVISIONED",
+      "ProvisionedCapacitySettings": {
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "AutoScalingRead": {
+          "ScalableTargetRequest": {
+            "MinCapacity": 1,
+            "MaxCapacity": 10,
+            "ServiceRole": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+          },
+          "ScalingPolicyConfiguration": {
+            "TargetValue": 70
+          }
+        },
+        "AutoScalingWrite": {
+          "ScalableTargetRequest": {
+            "MinCapacity": 1,
+            "MaxCapacity": 10,
+            "ServiceRole": "AWSServiceRoleForApplicationAutoScaling_DynamoDBTable"
+          },
+          "ScalingPolicyConfiguration": {
+            "TargetValue": 70
+          }
+        }
+      }
+    }
+  ]
+}
