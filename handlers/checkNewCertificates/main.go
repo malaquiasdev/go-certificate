@@ -17,7 +17,6 @@ func handlerCloudWatchEvent(ev events.CloudWatchAlarmTrigger) error {
 		log.Fatal(err)
 		panic(err)
 	}
-	log.Printf("INFO: token: %+v\n", auth.AccessToken)
 
 	reports, err := curseduca.FindReportEnrollment(auth, config.Curseduca)
 	if err != nil {
