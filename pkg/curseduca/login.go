@@ -2,19 +2,19 @@ package curseduca
 
 import (
 	"bytes"
-	"ekoa-certificate-generator/pkg/utils"
+	"ekoa-certificate-generator/config"
 	"encoding/json"
-	"net/http"
 	"io"
+	"net/http"
 )
 
 type Member struct {
-	IsAdmin  bool   `json:"isAdmin"`
-	ID       int    `json:"id"`
-	UUID     string `json:"uuid"`
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Tenant   Tenant `json:"tenant"`
+	IsAdmin bool   `json:"isAdmin"`
+	ID      int    `json:"id"`
+	UUID    string `json:"uuid"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Tenant  Tenant `json:"tenant"`
 }
 
 type Tenant struct {
@@ -24,23 +24,21 @@ type Tenant struct {
 }
 
 type Auth struct {
-	AccessToken   string `json:"accessToken"`
-	RefreshToken  string `json:"refreshToken"`
-	RedirectUrl  string `json:"redirectUrl"`
-	ExpiresAt    string `json:"expiresAt"`
+	AccessToken      string `json:"accessToken"`
+	RefreshToken     string `json:"refreshToken"`
+	RedirectUrl      string `json:"redirectUrl"`
+	ExpiresAt        string `json:"expiresAt"`
 	AuthenticationId int    `json:"authenticationId"`
-	CurrentLoginId string `json:"currentLoginId"`
-	Member        Member  `json:"member"`
+	CurrentLoginId   string `json:"currentLoginId"`
+	Member           Member `json:"member"`
 }
 
-func Login(username string, password string) (Auth, error) {
-	baseUrl := utils.GetEnv("PROF_CURSEDUCA_BASE_URL", "")
-	apiKey := utils.GetEnv("CURSEDUCA_API_KEY", "")
-	url := baseUrl + "/login"
-	
+func Login(config config.Curseduca) (Auth, error) {
+	url := config.ProfBaseUrl + "/login"
+
 	payload, _ := json.Marshal(map[string]string{
-		"username": username,
-		"password": password,
+		"username": config.Username,
+		"password": config.Password,
 	})
 
 	client := &http.Client{}
@@ -50,9 +48,8 @@ func Login(username string, password string) (Auth, error) {
 		return Auth{}, err
 	}
 
-
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api_key", apiKey)
+	req.Header.Set("api_key", config.ApiKey)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -60,7 +57,6 @@ func Login(username string, password string) (Auth, error) {
 	}
 
 	defer resp.Body.Close()
-
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -70,7 +66,7 @@ func Login(username string, password string) (Auth, error) {
 	var response Auth
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-	  return Auth{}, err
+		return Auth{}, err
 	}
 
 	return response, nil
