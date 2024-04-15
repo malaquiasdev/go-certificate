@@ -7,7 +7,7 @@
 
 ### Sample Data
 
-![](doc/dynamodb/sample/certificate.png)
+![](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/sample/certificate.png?raw=true)
 
 ## Global Secondary Index named - GSI1
 
@@ -18,7 +18,7 @@
 
 ### Sample Data
 
-![](doc/dynamodb/sample/GSI_certificate_GS1PK.png)
+![](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/sample/GSI_certificate_GS1PK.png?raw=true)
 
 ## Global Secondary Index named - GSI2
 
@@ -29,10 +29,10 @@
 
 ### Sample Data
 
-![](doc/dynamodb/sample/GSI_certificate_GS2PK.png)
+![](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/sample/GSI_certificate_GS2PK.png?raw=true)
 
 ## Model NoSQL Workbench Export
 
-![](doc/dynamodb/model.png)
+![](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/model.png?raw=true)
 
-[mode.json](doc/dynamodb/model.json)
+[mode.json](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/model.json)
