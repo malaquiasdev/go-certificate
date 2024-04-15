@@ -1,60 +1,36 @@
 # ekoa-certificate-generator
 
+## Setup
+
+### Prerequisites 📝
+
+Before you begin, ensure you have met the following requirements:
+
+- You must have an AWS Credentials
+- Configure the [AWS CLI](https://aws.amazon.com/pt/cli/)
+- You have installed the [Golang](https://go.dev/)
+- You have installed the [Terraform](https://www.terraform.io)
+
+### Create the infra on AWS 🏗️
+
+[Go to Terraform doc](terraform/readme.md)
+
+## Running local
+
+### Create configs
+
+Create a `.env` file at the root of the project. Make sure you follow the [`.env.example`](.env.example) file as a guide.
+
+### Create the infra on AWS 🏗️
+
+[Go to Terraform doc](terraform/readme.md)
+
+### Run project
+
+```sh
+$ go run cmd/main.go
+```
+
 ## DynamoDB Schema
 
-### METADATA
-``` 
-{
-  "TableName": "report_enrollment",
-  "KeySchema": [
-    {
-      "KeyType": "HASH",
-      "AttributeName": "METADATA#0"
-    },
-    {
-      "KeyType": "RANGE",
-      "AttributeName": "METADATA#0"
-    }
-  ],
-  "AttributeDefinitions": [
-    {
-      "AttributeName": "METADATA#0",
-      "AttributeType": "S"
-    },
-    {
-      "AttributeName": "totalCount",
-      "AttributeType": "N"
-    },
-  ],
-  "BillingMode": "PAY_PER_REQUEST"
-}
-```
-
-### REPORT
-
-```
-{
-  "TableName": "report_enrollment",
-  "KeySchema": [
-    {
-      "KeyType": "HASH",
-      "AttributeName": "REPORT#{ID}"
-    },
-    {
-      "KeyType": "RANGE",
-      "AttributeName": "MEMBER#{EMAIL}"
-    }
-  ],
-  "AttributeDefinitions": [
-    {
-      "AttributeName": "MEMBER#{EMAIL}",
-      "AttributeType": "S"
-    },
-    {
-      "AttributeName": "REPORT#{ID}",
-      "AttributeType": "N"
-    }
-  ],
-  "BillingMode": "PAY_PER_REQUEST"
-}
-```
+[Go to DynamoDB doc](doc/dynamodb/README.md)

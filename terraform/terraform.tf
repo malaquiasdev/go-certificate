@@ -7,15 +7,15 @@ terraform {
     }
   }
   backend "s3" {
-    bucket  = "certificate-generator-76534819"
-    key     = "terraform/infra.tfstate"
-    region  = "sa-east-1"
+    bucket = "certificate-generator-76534819"
+    key    = "terraform/infra.tfstate"
+    region = "sa-east-1"
   }
 }
 
 provider "aws" {
   region              = var.aws_region
-  access_key = var.access_key
-  secret_key = var.secret_key
+  access_key          = var.access_key
+  secret_key          = var.secret_key
   allowed_account_ids = [var.aws_account_number]
 }

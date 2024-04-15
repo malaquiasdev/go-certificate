@@ -9,3 +9,4 @@ variable "prof_cursoeduca_password" { type = string }
 variable "prof_cursoeduca_base_url" { type = string }
 variable "cursoeduca_api_key" { type = string }
 variable "class_cursoeduca_base_url" { type = string }
+variable "ddb_name" { type = string }
