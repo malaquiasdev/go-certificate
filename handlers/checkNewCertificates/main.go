@@ -1,8 +1,8 @@
 package main
 
 import (
+	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/pkg/curseduca"
-	"ekoa-certificate-generator/pkg/utils"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -10,23 +10,22 @@ import (
 )
 
 func handlerCloudWatchEvent(ev events.CloudWatchAlarmTrigger) error {
-	username := utils.GetEnv("PROF_CURSEDUCA_USERNAME", "")
-	password := utils.GetEnv("PROF_CURSEDUCA_PASSWORD", "")
+	config := config.LoadConfig(false)
 
-	auth, err := curseduca.Login(username, password)
+	auth, err := curseduca.Login(config.Curseduca)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	log.Printf("INFO: token: %+v\n", auth.AccessToken)
 
-	reports, err := curseduca.FindReportEnrollment(auth)
+	reports, err := curseduca.FindReportEnrollment(auth, config.Curseduca)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
 	}
 	log.Printf("INFO: Reports details: %+v\n", reports)
-	
+
 	return nil
 }
 

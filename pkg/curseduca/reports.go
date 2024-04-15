@@ -1,7 +1,7 @@
 package curseduca
 
 import (
-	"ekoa-certificate-generator/pkg/utils"
+	"ekoa-certificate-generator/config"
 	"encoding/json"
 	"io"
 	"log"
@@ -47,10 +47,8 @@ type ReportEnrollment struct {
 	Data     []Course `json:"data"`
 }
 
-func FindReportEnrollment(auth Auth) (ReportEnrollment, error) {
-	baseUrl := utils.GetEnv("CLASS_CURSEDUCA_BASE_URL", "")
-	apiKey := utils.GetEnv("CURSEDUCA_API_KEY", "")
-	url := baseUrl + "/reports/enrollments?limit=1000000000"
+func FindReportEnrollment(auth Auth, config config.Curseduca) (ReportEnrollment, error) {
+	url := config.ClassBaseUrl + "/reports/enrollments?limit=1000000000"
 
 	client := &http.Client{}
 
@@ -61,7 +59,7 @@ func FindReportEnrollment(auth Auth) (ReportEnrollment, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("api_key", apiKey)
+	req.Header.Set("api_key", config.ApiKey)
 	req.Header.Set("Authorization", "Bearer "+auth.AccessToken)
 
 	resp, err := client.Do(req)
