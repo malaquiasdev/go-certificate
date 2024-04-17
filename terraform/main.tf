@@ -4,7 +4,7 @@ module "dynamodb_certificates" {
   aws_region = var.aws_region
 }
 
-module "check_new_certificates" {
+module "lambda_check_new_certificates" {
   source           = "./modules/lambda"
   name             = "${var.project_name}-check_new_certificates"
   handler_path     = "bootstrap"
@@ -22,4 +22,10 @@ module "check_new_certificates" {
     CURSEDUCA_API_KEY        = var.cursoeduca_api_key
     CLASS_CURSEDUCA_BASE_URL = var.class_cursoeduca_base_url
   }
+}
+
+module "sqs_main" {
+  source = "./modules/sqs"
+  name = var.project_name
+  delay_seconds = 30
 }
