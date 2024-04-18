@@ -1,6 +1,6 @@
 package config
 
-import "ekoa-certificate-generator/pkg/utils"
+import "ekoa-certificate-generator/internal/utils"
 
 type AWS struct {
 	Region          string

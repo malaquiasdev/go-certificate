@@ -2,7 +2,7 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
-	"ekoa-certificate-generator/pkg/curseduca"
+	"ekoa-certificate-generator/internal/curseduca"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
