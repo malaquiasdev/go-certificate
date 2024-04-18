@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handlerCloudWatchEvent(ev events.CloudWatchAlarmTrigger) error {
+func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	config := config.LoadConfig(false)
 
 	auth, err := curseduca.Login(config.Curseduca)
@@ -29,5 +29,5 @@ func handlerCloudWatchEvent(ev events.CloudWatchAlarmTrigger) error {
 }
 
 func main() {
-	lambda.Start(handlerCloudWatchEvent)
+	lambda.Start(handlerImporter)
 }

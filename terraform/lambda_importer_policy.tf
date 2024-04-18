@@ -1,4 +1,4 @@
-resource "aws_iam_role" "check_new_certificates_role" {
+resource "aws_iam_role" "lambda_importer_role" {
   name = "${var.project_name}-role"
 
   assume_role_policy = <<EOF
@@ -18,7 +18,7 @@ resource "aws_iam_role" "check_new_certificates_role" {
 EOF
 }
 
-resource "aws_iam_policy" "check_new_certificates_policy" {
+resource "aws_iam_policy" "lambda_importer_policy" {
   name        = format("%s-trigger-transcoder", "${var.project_name}-policy")
   description = "Allow to access base resources and trigger transcoder"
   policy      = <<EOF
@@ -43,6 +43,6 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb" {
-  policy_arn = aws_iam_policy.check_new_certificates_policy.arn
-  role       = aws_iam_role.check_new_certificates_role.name
+  policy_arn = aws_iam_policy.lambda_importer_policy.arn
+  role       = aws_iam_role.lambda_importer_role.name
 }

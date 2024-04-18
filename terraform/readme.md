@@ -41,8 +41,8 @@ Create a bucket s3 manualy in your account to do the version control and update 
 ### Terminal Environment Variables
 
 ```
-export AWS_ACCESS_KEY_ID=your_aws_access_key
-export AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+export AWS_ACCESS_KEY_ID=AKIASMHQ4J34FGEQ5SEU
+
 ```
 
 ### Initialize
