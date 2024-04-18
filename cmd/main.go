@@ -2,8 +2,8 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
-	"ekoa-certificate-generator/pkg/certificate"
-	"ekoa-certificate-generator/pkg/curseduca"
+	"ekoa-certificate-generator/internal/certificate"
+	"ekoa-certificate-generator/internal/curseduca"
 	"image/jpeg"
 	"log"
 	"os"
