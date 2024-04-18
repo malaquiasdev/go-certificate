@@ -4,14 +4,14 @@ module "dynamodb_certificates" {
   aws_region = var.aws_region
 }
 
-module "lambda_check_new_certificates" {
+module "lambda_importer" {
   source           = "./modules/lambda"
-  name             = "${var.project_name}-check_new_certificates"
+  name             = "${var.project_name}-importer"
   handler_path     = "bootstrap"
   runtime          = "provided.al2023"
-  role_arn         = aws_iam_role.check_new_certificates_role.arn
-  filename         = var.check_new_certificates_source_code_hash
-  source_code_hash = base64sha256(var.check_new_certificates_source_code_hash)
+  role_arn         = aws_iam_role.lambda_importer_role.arn
+  filename         = var.importer_source_code_hash
+  source_code_hash = base64sha256(var.importer_source_code_hash)
   timeout          = 30
   memory_size      = 1024
   log_retention    = 90
