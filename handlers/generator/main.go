@@ -1,6 +1,8 @@
 package main
 
 import (
+	"ekoa-certificate-generator/internal/curseduca"
+	"encoding/json"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -8,9 +10,15 @@ import (
 )
 
 func handlerGenerator(ev events.SQSEvent) error {
-	for _, message := range ev.Records {
-		log.Printf("INFO: %+v\n", message.Body)
+	report := curseduca.Course{}
+	
+	err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
 	}
+
+	log.Printf("INFO: %+v\n", report)
 
 	return nil
 }

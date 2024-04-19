@@ -3,7 +3,7 @@ package main
 import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
-	"ekoa-certificate-generator/internal/queue"
+	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"log"
 
@@ -26,7 +26,7 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		log.Fatal(err)
 		panic(err)
 	}
-	log.Printf("INFO: Reports details: %+v\n", reports)
+	log.Printf("INFO: reports totalCount - %+v\n", reports.Metadata.TotalCount)
 
 	for _, data := range reports.Data {
 		jsonData, err := json.Marshal(data)
@@ -34,11 +34,10 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 			log.Fatal(err)
 			panic(err)
 		}
-		
-		jsonString := string(jsonData)
-		queue.Send(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
-	}
 
+		jsonString := string(jsonData)
+		utils.QueueSendMessage(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
+	}
 
 	return nil
 }
