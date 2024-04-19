@@ -3,9 +3,10 @@ package config
 import "ekoa-certificate-generator/internal/utils"
 
 type AWS struct {
-	Region          string
-	AccessKey       string
-	SecretAccessKey string
+	Region            string
+	AccessKey         string
+	SecretAccessKey   string
+	GeneretorQueueUrl string
 }
 
 type Curseduca struct {
@@ -25,9 +26,10 @@ func LoadConfig(isLocal bool) Config {
 	if isLocal {
 		return Config{
 			AWS: AWS{
-				Region:          utils.GetEnvLocal("AWS_DEFAULT_REGION", ""),
-				AccessKey:       utils.GetEnvLocal("AWS_ACCESS_KEY_ID", ""),
-				SecretAccessKey: utils.GetEnvLocal("AWS_SECRET_ACCESS_KEY", ""),
+				Region:            utils.GetEnvLocal("AWS_DEFAULT_REGION", ""),
+				AccessKey:         utils.GetEnvLocal("AWS_ACCESS_KEY_ID", ""),
+				SecretAccessKey:   utils.GetEnvLocal("AWS_SECRET_ACCESS_KEY", ""),
+				GeneretorQueueUrl: utils.GetEnvLocal("AWS_GENERATOR_QUEUE_URL", ""),
 			},
 			Curseduca: Curseduca{
 				ClassBaseUrl: utils.GetEnvLocal("CLASS_CURSEDUCA_BASE_URL", ""),
@@ -40,9 +42,10 @@ func LoadConfig(isLocal bool) Config {
 	}
 	return Config{
 		AWS: AWS{
-			Region:          utils.GetEnv("AWS_DEFAULT_REGION", ""),
-			AccessKey:       utils.GetEnv("AWS_ACCESS_KEY_ID", ""),
-			SecretAccessKey: utils.GetEnv("AWS_SECRET_ACCESS_KEY", ""),
+			Region:            utils.GetEnv("AWS_DEFAULT_REGION", ""),
+			AccessKey:         utils.GetEnv("AWS_ACCESS_KEY_ID", ""),
+			SecretAccessKey:   utils.GetEnv("AWS_SECRET_ACCESS_KEY", ""),
+			GeneretorQueueUrl: utils.GetEnv("AWS_GENERATOR_QUEUE_URL", ""),
 		},
 		Curseduca: Curseduca{
 			ClassBaseUrl: utils.GetEnv("CLASS_CURSEDUCA_BASE_URL", ""),
