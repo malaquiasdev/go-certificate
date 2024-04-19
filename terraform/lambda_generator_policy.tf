@@ -1,5 +1,5 @@
-resource "aws_iam_role" "lambda_importer_role" {
-  name = "${var.project_name}-lambda-importer-role"
+resource "aws_iam_role" "lambda_generator_role" {
+  name = "${var.project_name}-lambda-generator-role"
 
   assume_role_policy = <<EOF
 {
@@ -18,8 +18,8 @@ resource "aws_iam_role" "lambda_importer_role" {
 EOF
 }
 
-resource "aws_iam_policy" "lambda_importer_policy" {
-  name        = format("%s-trigger-transcoder", "${var.project_name}-lambda-importer-policy")
+resource "aws_iam_policy" "lambda_generator_policy" {
+  name        = format("%s-trigger-transcoder", "${var.project_name}-lambda-generator-policy")
   description = "Allow to access base resources and trigger transcoder"
   policy      = <<EOF
 {
@@ -42,7 +42,7 @@ resource "aws_iam_policy" "lambda_importer_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_importer_dynamodb" {
-  policy_arn = aws_iam_policy.lambda_importer_policy.arn
-  role       = aws_iam_role.lambda_importer_role.name
+resource "aws_iam_role_policy_attachment" "lambda_generator_dynamodb" {
+  policy_arn = aws_iam_policy.lambda_generator_policy.arn
+  role       = aws_iam_role.lambda_generator_role.name
 }
