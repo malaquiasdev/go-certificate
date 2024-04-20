@@ -2,26 +2,31 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
+	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/imagedraw"
 	"ekoa-certificate-generator/internal/utils"
+	"encoding/json"
+	"fmt"
+	"log"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
 func handlerGenerator(ev events.SQSEvent) error {
-	// report := curseduca.Course{}
+	report := curseduca.Course{}
 	c := config.LoadConfig(false)
 	sess := config.CreateAWSSession(c.AWS)
 
-	/*err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
+	err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)
-	}*/
-	// log.Printf("INFO: report %q", report)
+	}
+	log.Printf("INFO: report %q", report)
 
 	img := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
+	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 	imageDraw := imagedraw.DrawAndEconde(img, []imagedraw.Field{{
 		Key: "FULL_NAME",
 		Text: imagedraw.FieldText{
@@ -29,7 +34,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			PositionX: 610,
 			PositionY: 430,
 			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
-			Value:     "Mateus Oliveira Malaquias",
+			Value:     report.Member.Name,
 		},
 	}, {
 		Key: "FINISH_AT",
@@ -38,7 +43,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			PositionX: 1350,
 			PositionY: 665,
 			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
-			Value:     "20/04/2024",
+			Value:     formattedFinishedAt,
 		},
 	}, {
 		Key: "SIGNATURE",
@@ -47,12 +52,13 @@ func handlerGenerator(ev events.SQSEvent) error {
 			PositionX: 1300,
 			PositionY: 800,
 			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Allura-Regular.ttf", c.AWS.BucketName, sess),
-			Value:     "Mateus Oliveira Malaquias",
+			Value:     report.Member.Name,
 		},
 	}})
+	fileName := fmt.Sprintf("%d%s", report.ID, ".png")
 
 	// Upload modified image to S3 (replace with your upload function)
-	utils.BucketSaveObject(imageDraw.Bytes(), "test.png", c.AWS.BucketName, sess)
+	utils.BucketSaveObject(imageDraw.Bytes(), fileName, c.AWS.BucketName, sess)
 
 	return nil
 }
