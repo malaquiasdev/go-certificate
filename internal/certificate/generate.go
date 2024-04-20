@@ -1,10 +1,13 @@
 package certificate
 
 import (
+	"bytes"
 	"image"
 	"image/color"
+	"log"
 
 	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
 )
 
 type Field struct {
@@ -16,28 +19,31 @@ type FieldText struct {
 	PositionX int
 	PositionY int
 	FontSize  float64
-	FontPath  string
+	FontBytes []byte
 	Value     string
 }
 
-func Generate(imgPath string, fields []Field) (image.Image, error) {
-	bgImage, err := gg.LoadImage(imgPath)
+func Generate(imgBytes []byte, fields []Field) (image.Image, error) {
+	// Decode the provided image bytes into an image.RGBA type
+	img, _, err := image.Decode(bytes.NewReader(imgBytes))
 	if err != nil {
+		log.Fatal("ERROR: decode image bytes failed ", err)
 		return nil, err
 	}
 
-	imgWidth := bgImage.Bounds().Dx()
-	imgHeight := bgImage.Bounds().Dy()
-
-	dc := gg.NewContext(imgWidth, imgHeight)
-	dc.DrawImage(bgImage, 0, 0)
+	dc := gg.NewContextForImage(img)
+	dc.DrawImage(img, 0, 0)
 
 	for _, field := range fields {
 
-		if err := dc.LoadFontFace(field.Text.FontPath, field.Text.FontSize); err != nil {
+		f, err := truetype.Parse(field.Text.FontBytes)
+		if err != nil {
+			log.Fatal("ERROR: parse font failed ", err)
 			return nil, err
 		}
 
+		// define new font face and set it on the context
+		dc.SetFontFace(truetype.NewFace(f, &truetype.Options{Size: field.Text.FontSize}))
 		dc.SetColor(color.Black)
 		dc.DrawString(field.Text.Value, float64(field.Text.PositionX), float64(field.Text.PositionY))
 	}

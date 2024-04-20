@@ -44,6 +44,9 @@ module "lambda_generator" {
   memory_size      = 1024
   log_retention    = 90
   depends_on       = [module.sqs_generator]
+  environment = {
+    AWS_BUCKET_NAME = var.aws_bucket_name
+  }
 }
 
 resource "aws_lambda_event_source_mapping" "lambda_generator_event" {

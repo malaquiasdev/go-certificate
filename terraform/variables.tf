@@ -2,6 +2,7 @@ variable "aws_region" { type = string }
 variable "aws_account_number" { type = string }
 variable "access_key" { type = string }
 variable "secret_key" { type = string }
+variable "aws_bucket_name" { type = string }
 variable "project_name" { type = string }
 variable "importer_source_code" { type = string }
 variable "generator_source_code" { type = string }

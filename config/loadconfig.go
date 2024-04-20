@@ -7,6 +7,7 @@ type AWS struct {
 	AccessKey         string
 	SecretAccessKey   string
 	GeneretorQueueUrl string
+	BucketName        string
 }
 
 type Curseduca struct {
@@ -30,6 +31,7 @@ func LoadConfig(isLocal bool) Config {
 				AccessKey:         utils.GetEnvLocal("AWS_ACCESS_KEY_ID", ""),
 				SecretAccessKey:   utils.GetEnvLocal("AWS_SECRET_ACCESS_KEY", ""),
 				GeneretorQueueUrl: utils.GetEnvLocal("AWS_GENERATOR_QUEUE_URL", ""),
+				BucketName:        utils.GetEnvLocal("AWS_BUCKET_NAME", ""),
 			},
 			Curseduca: Curseduca{
 				ClassBaseUrl: utils.GetEnvLocal("CLASS_CURSEDUCA_BASE_URL", ""),
@@ -46,6 +48,7 @@ func LoadConfig(isLocal bool) Config {
 			AccessKey:         utils.GetEnv("AWS_ACCESS_KEY_ID", ""),
 			SecretAccessKey:   utils.GetEnv("AWS_SECRET_ACCESS_KEY", ""),
 			GeneretorQueueUrl: utils.GetEnv("AWS_GENERATOR_QUEUE_URL", ""),
+			BucketName:        utils.GetEnv("AWS_BUCKET_NAME", ""),
 		},
 		Curseduca: Curseduca{
 			ClassBaseUrl: utils.GetEnv("CLASS_CURSEDUCA_BASE_URL", ""),
