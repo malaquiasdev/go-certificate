@@ -1,4 +1,4 @@
-package queue
+package utils
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
-func Send(messageBody string, queueUrl string, awsSession *session.Session) {
+func QueueSendMessage(messageBody string, queueUrl string, awsSession *session.Session) {
 	client := sqs.New(awsSession)
 	client.SendMessage(&sqs.SendMessageInput{
 		QueueUrl:    aws.String(queueUrl),
