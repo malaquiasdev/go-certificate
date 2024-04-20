@@ -23,10 +23,13 @@ func handlerGenerator(ev events.SQSEvent) error {
 		log.Fatal(err)
 		panic(err)
 	}
+
 	log.Printf("INFO: report %q", report)
 
 	img := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
+
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
+
 	imageDraw := imagedraw.DrawAndEconde(img, []imagedraw.Field{{
 		Key: "FULL_NAME",
 		Text: imagedraw.FieldText{
@@ -55,9 +58,9 @@ func handlerGenerator(ev events.SQSEvent) error {
 			Value:     report.Member.Name,
 		},
 	}})
+
 	fileName := fmt.Sprintf("%d%s", report.ID, ".png")
 
-	// Upload modified image to S3 (replace with your upload function)
 	utils.BucketSaveObject(imageDraw.Bytes(), fileName, c.AWS.BucketName, sess)
 
 	return nil
