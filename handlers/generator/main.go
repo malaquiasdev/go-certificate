@@ -24,7 +24,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 		panic(err)
 	}
 
-	log.Printf("INFO: report -", report)
+	log.Printf("INFO: report - %+v\n", report)
 
 	img := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
 
