@@ -3,91 +3,62 @@ package imagedraw
 import (
 	"bytes"
 	"image"
-	"image/draw"
+	"image/color"
 	"image/png"
-	"log"
-	"strings"
 
-	"github.com/golang/freetype"
-	"golang.org/x/image/font"
+	"log"
+
+	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
 )
 
-func GenerateImage(textContent string, fgColorHex string, bgColorHex string, fontSize float64, fontBytes []byte, imgBytes []byte) ([]byte, error) {
+type Field struct {
+	Key  string
+	Text FieldText
+}
 
-	/*
-		fgColor := color.RGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff} // Default font color
-		if len(fgColorHex) == 7 {
-			_, err := fmt.Sscanf(fgColorHex, "#%02x%02x%02x", &fgColor.R, &fgColor.G, &fgColor.B)
-			if err != nil {
-				log.Println(err)
-				fgColor = color.RGBA{R: 0x2e, G: 0x34, B: 0x36, A: 0xff}
-			}
-		}
+type FieldText struct {
+	PositionX int
+	PositionY int
+	FontSize  float64
+	FontBytes []byte
+	Value     string
+}
 
-		bgColor := color.RGBA{R: 0x30, G: 0x0a, B: 0x24, A: 0xff} // Default background color
-		if len(bgColorHex) == 7 {
-			_, err := fmt.Sscanf(bgColorHex, "#%02x%02x%02x", &bgColor.R, &bgColor.G, &bgColor.B)
-			if err != nil {
-				log.Println(err)
-				bgColor = color.RGBA{R: 0x30, G: 0x0a, B: 0x24, A: 0xff}
-			}
-		}
-	*/
-
-	loadedFont, err := freetype.ParseFont(fontBytes)
-	if err != nil {
-		log.Fatal("ERROR: parse font failed ", err)
-		return nil, err
-	}
-
-	code := strings.Replace(textContent, "\t", "    ", -1) // convert tabs into spaces
-	text := strings.Split(code, "\n")                      // split newlines into arrays
-
-	/*
-		fg := image.NewUniform(fgColor)
-		bg := image.NewUniform(bgColor)
-		rgba := image.NewRGBA(image.Rect(0, 0, 1200, 630))
-		draw.Draw(rgba, rgba.Bounds(), bg, image.Pt(0, 0), draw.Src)
-	*/
-
+func Draw(imgBytes []byte, fields []Field) (image.Image, error) {
 	// Decode the provided image bytes into an image.RGBA type
-	img, err := png.Decode(bytes.NewReader(imgBytes))
+	img, _, err := image.Decode(bytes.NewReader(imgBytes))
 	if err != nil {
 		log.Fatal("ERROR: decode image bytes failed ", err)
 		return nil, err
 	}
 
-	bounds := img.Bounds()
-	rgba := image.NewRGBA(bounds)
-	draw.Draw(rgba, rgba.Bounds(), img, image.Pt(0, 0), draw.Src)
+	dc := gg.NewContextForImage(img)
+	dc.DrawImage(img, 0, 0)
 
-	c := freetype.NewContext()
-	c.SetDPI(72)
-	c.SetFont(loadedFont)
-	c.SetFontSize(fontSize)
-	// c.SetClip(rgba.Bounds())
-	c.SetClip(bounds)
-	// c.SetDst(rgba)
-	c.SetDst(rgba)
-	// c.SetSrc(fg)
-	c.SetHinting(font.HintingNone)
+	for _, field := range fields {
 
-	textXOffset := 50
-	textYOffset := 10 + int(c.PointToFixed(fontSize)>>6) // Note shift/truncate 6 bits first
-
-	pt := freetype.Pt(textXOffset, textYOffset)
-	for _, s := range text {
-		_, err = c.DrawString(strings.Replace(s, "\r", "", -1), pt)
+		f, err := truetype.Parse(field.Text.FontBytes)
 		if err != nil {
+			log.Fatal("ERROR: parse font failed ", err)
 			return nil, err
 		}
-		pt.Y += c.PointToFixed(fontSize * 1.5)
+
+		// define new font face and set it on the context
+		dc.SetFontFace(truetype.NewFace(f, &truetype.Options{Size: field.Text.FontSize}))
+		dc.SetColor(color.Black)
+		dc.DrawString(field.Text.Value, float64(field.Text.PositionX), float64(field.Text.PositionY))
 	}
 
+	return dc.Image(), nil
+}
+
+func DrawAndEconde(imgBytes []byte, fields []Field) *bytes.Buffer {
+	imageDraw, _ := Draw(imgBytes, fields)
 	b := new(bytes.Buffer)
-	if err := png.Encode(b, rgba); err != nil {
+	if err := png.Encode(b, imageDraw); err != nil {
 		log.Fatal("ERROR: unable to encode image ", err)
-		return nil, err
+		panic(err)
 	}
-	return b.Bytes(), nil
+	return b
 }
