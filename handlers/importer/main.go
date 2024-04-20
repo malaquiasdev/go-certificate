@@ -29,6 +29,11 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	log.Printf("INFO: reports totalCount - %+v\n", reports.Metadata.TotalCount)
 
 	for _, data := range reports.Data {
+		if data.FinishedAt == nil {
+			log.Printf("WARN: skipping report FinishedAt not found - %+v\n", data)
+			continue
+		}
+
 		jsonData, err := json.Marshal(data)
 		if err != nil {
 			log.Fatal(err)
