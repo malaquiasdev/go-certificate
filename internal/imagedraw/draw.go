@@ -51,12 +51,12 @@ func Draw(imgBytes []byte, fields []Field) image.Image {
 	return dc.Image()
 }
 
-func DrawAndEconde(imgBytes []byte, fields []Field) *bytes.Buffer {
+func DrawAndEconde(imgBytes []byte, fields []Field) []byte {
 	imageDraw := Draw(imgBytes, fields)
 	b := new(bytes.Buffer)
 	if err := png.Encode(b, imageDraw); err != nil {
 		log.Fatal("ERROR: unable to encode image ", err)
 		panic(err)
 	}
-	return b
+	return b.Bytes()
 }

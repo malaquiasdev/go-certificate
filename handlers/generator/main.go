@@ -1,14 +1,12 @@
 package main
 
 import (
-	"bytes"
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/imagedraw"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"fmt"
-	"image"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -33,7 +31,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
-	imageDraw := imagedraw.Draw(imgPage1, []imagedraw.Field{{
+	imgDraw := imagedraw.DrawAndEconde(imgPage1, []imagedraw.Field{{
 		Key: "FULL_NAME",
 		Text: imagedraw.FieldText{
 			FontSize:  50.0,
@@ -62,13 +60,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 		},
 	}})
 
-	imgPag2Draw, _, err := image.Decode(bytes.NewReader(imgPage2))
-	if err != nil {
-		log.Fatal("ERROR: decode image bytes failed ", err)
-		panic(err)
-	}
-
-	pdf := imagedraw.ImageToPdf(imageDraw, imgPag2Draw)
+	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
 
 	fileName := fmt.Sprintf("%d%s", report.ID, ".pdf")
 
