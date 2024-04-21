@@ -2,51 +2,17 @@ package imagedraw
 
 import (
 	"bytes"
-	"image"
-	"image/png"
 	"log"
 
 	"github.com/signintech/gopdf"
 )
 
-func ImageToPdf(imageDraw image.Image, imageDraw2 image.Image) *bytes.Buffer {
-	b := new(bytes.Buffer)
-	if err := png.Encode(b, imageDraw); err != nil {
-		log.Fatal("ERROR: unable to encode image ", err)
-		panic(err)
-	}
-
-	img, _ := gopdf.ImageHolderByBytes(b.Bytes())
-
+func ImageToPdf(imageDraw []byte, imageDraw2 []byte) *bytes.Buffer {
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4Landscape})
-	pdf.AddPage()
 
-	pdf.ImageByHolderWithOptions(img,
-		gopdf.ImageOptions{
-			Rect: &gopdf.Rect{
-				W: 842,
-				H: 595,
-			},
-		})
-
-	b2 := new(bytes.Buffer)
-	if err := png.Encode(b2, imageDraw2); err != nil {
-		log.Fatal("ERROR: unable to encode image ", err)
-		panic(err)
-	}
-
-	img2, _ := gopdf.ImageHolderByBytes(b2.Bytes())
-
-	pdf.AddPage()
-	// Draw the image onto the PDF page (replace with resized image if used)
-	pdf.ImageByHolderWithOptions(img2,
-		gopdf.ImageOptions{
-			Rect: &gopdf.Rect{
-				W: 842,
-				H: 595,
-			},
-		})
+	addPageWithImage(&pdf, imageDraw, gopdf.PageSizeA4Landscape.W, gopdf.PageSizeA4Landscape.H)
+	addPageWithImage(&pdf, imageDraw2, gopdf.PageSizeA4Landscape.W, gopdf.PageSizeA4Landscape.H)
 
 	pdfBuffer := bytes.NewBuffer([]byte{})
 	if _, err := pdf.WriteTo(pdfBuffer); err != nil {
@@ -54,4 +20,19 @@ func ImageToPdf(imageDraw image.Image, imageDraw2 image.Image) *bytes.Buffer {
 		panic(err)
 	}
 	return pdfBuffer
+}
+
+func addPageWithImage(pdf *gopdf.GoPdf, imageData []byte, width float64, height float64) {
+	img, err := gopdf.ImageHolderByBytes(imageData)
+	if err != nil {
+		log.Fatal("ERROR: unable to create image holder ", err)
+	}
+	pdf.AddPage()
+	pdf.ImageByHolderWithOptions(img,
+		gopdf.ImageOptions{
+			Rect: &gopdf.Rect{
+				W: width,
+				H: height,
+			},
+		})
 }
