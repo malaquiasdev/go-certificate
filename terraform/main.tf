@@ -18,7 +18,7 @@ module "lambda_importer" {
   role_arn         = aws_iam_role.lambda_importer_role.arn
   filename         = var.importer_source_code
   source_code_hash = base64sha256(var.importer_source_code)
-  timeout          = 5
+  timeout          = 300
   memory_size      = 1024
   log_retention    = 90
   depends_on       = [module.sqs_generator]
@@ -40,7 +40,7 @@ module "lambda_generator" {
   role_arn         = aws_iam_role.lambda_generator_role.arn
   filename         = var.generator_source_code
   source_code_hash = base64sha256(var.generator_source_code)
-  timeout          = 30
+  timeout          = 60
   memory_size      = 1024
   log_retention    = 90
   depends_on       = [module.sqs_generator]
@@ -54,4 +54,5 @@ resource "aws_lambda_event_source_mapping" "lambda_generator_event" {
   event_source_arn = module.sqs_generator.arn
   function_name    = module.lambda_generator.lambda_arn
   enabled          = true
+  batch_size       = 1
 }

@@ -26,6 +26,11 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	log.Printf("INFO: report - %+v\n", report)
 
+	if report.FinishedAt == nil {
+		log.Printf("WARN: skipping report FinishedAt not found")
+		return nil
+	}
+
 	imgPage1 := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
 	imgPage2 := utils.BucketGetObjectBytes("pdf_templates/320/page_2.png", c.AWS.BucketName, sess)
 

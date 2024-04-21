@@ -30,7 +30,7 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 
 	count := 0
 	for _, data := range reports.Data {
-		if data.FinishedAt == nil || count == 2 {
+		if data.FinishedAt == nil {
 			log.Printf("WARN: skipping report FinishedAt not found - %+v\n", data)
 			continue
 		}
@@ -45,6 +45,8 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		utils.QueueSendMessage(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
 		count++
 	}
+
+	log.Printf("INFO: event message count - %+v\n", count)
 
 	return nil
 }
