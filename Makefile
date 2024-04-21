@@ -14,4 +14,5 @@ build-generator:
 
 deploy:
 	- make build-generator
+	- make build-importer
 	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve
