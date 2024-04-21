@@ -18,7 +18,7 @@ module "lambda_importer" {
   role_arn         = aws_iam_role.lambda_importer_role.arn
   filename         = var.importer_source_code
   source_code_hash = base64sha256(var.importer_source_code)
-  timeout          = 30
+  timeout          = 5
   memory_size      = 1024
   log_retention    = 90
   depends_on       = [module.sqs_generator]

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/imagedraw"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"fmt"
+	"image"
 	"log"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -26,11 +28,12 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	log.Printf("INFO: report - %+v\n", report)
 
-	img := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
+	imgPage1 := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
+	imgPage2 := utils.BucketGetObjectBytes("pdf_templates/320/page_2.png", c.AWS.BucketName, sess)
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
-	imageDraw := imagedraw.DrawAndEconde(img, []imagedraw.Field{{
+	imageDraw := imagedraw.Draw(imgPage1, []imagedraw.Field{{
 		Key: "FULL_NAME",
 		Text: imagedraw.FieldText{
 			FontSize:  50.0,
@@ -59,9 +62,17 @@ func handlerGenerator(ev events.SQSEvent) error {
 		},
 	}})
 
-	fileName := fmt.Sprintf("%d%s", report.ID, ".png")
+	imgPag2Draw, _, err := image.Decode(bytes.NewReader(imgPage2))
+	if err != nil {
+		log.Fatal("ERROR: decode image bytes failed ", err)
+		panic(err)
+	}
 
-	utils.BucketSaveObject(imageDraw.Bytes(), fileName, c.AWS.BucketName, sess)
+	pdf := imagedraw.ImageToPdf(imageDraw, imgPag2Draw)
+
+	fileName := fmt.Sprintf("%d%s", report.ID, ".pdf")
+
+	utils.BucketSaveObject(pdf.Bytes(), "pdf/"+fileName, c.AWS.BucketName, sess)
 
 	return nil
 }
