@@ -7,6 +7,6 @@ func FormatDateTimeToDateOnly(fullDateTime *string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	formatted := dateTime.Format("01/02/2006")
+	formatted := dateTime.Format("02/01/2006")
 	return formatted, nil
 }

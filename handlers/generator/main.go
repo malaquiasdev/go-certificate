@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -42,7 +43,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  50.0,
 			PositionX: 610,
 			PositionY: 430,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
 			Value:     report.Member.Name,
 		},
 	}, {
@@ -57,11 +58,11 @@ func handlerGenerator(ev events.SQSEvent) error {
 	}, {
 		Key: "SIGNATURE",
 		Text: imagedraw.FieldText{
-			FontSize:  40.0,
+			FontSize:  70.0,
 			PositionX: 1300,
-			PositionY: 800,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Allura-Regular.ttf", c.AWS.BucketName, sess),
-			Value:     report.Member.Name,
+			PositionY: 830,
+			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
+			Value:     strings.ToLower(report.Member.Name),
 		},
 	}})
 
