@@ -32,8 +32,11 @@ func handlerGenerator(ev events.SQSEvent) error {
 		return nil
 	}
 
-	imgPage1 := utils.BucketGetObjectBytes("pdf_templates/320/page_1.png", c.AWS.BucketName, sess)
-	imgPage2 := utils.BucketGetObjectBytes("pdf_templates/320/page_2.png", c.AWS.BucketName, sess)
+	imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
+	imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
+
+	imgPage1 := utils.BucketGetObjectBytes(imgPage1Path, c.AWS.BucketName, sess)
+	imgPage2 := utils.BucketGetObjectBytes(imgPage2Path, c.AWS.BucketName, sess)
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
@@ -68,9 +71,9 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
 
-	fileName := fmt.Sprintf("%d%s", report.ID, ".pdf")
+	fileSavePath := "pdf/" + report.Member.Email + "/" + fmt.Sprintf("%d%s", report.ID, ".pdf")
 
-	utils.BucketSaveObject(pdf.Bytes(), "pdf/"+fileName, c.AWS.BucketName, sess)
+	utils.BucketSaveObject(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
 
 	return nil
 }
