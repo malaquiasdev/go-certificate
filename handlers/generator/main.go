@@ -2,78 +2,94 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
-	"ekoa-certificate-generator/internal/curseduca"
-	"ekoa-certificate-generator/internal/imagedraw"
-	"ekoa-certificate-generator/internal/utils"
-	"encoding/json"
-	"fmt"
+	"ekoa-certificate-generator/internal/certificate"
+	"ekoa-certificate-generator/internal/repository"
 	"log"
-	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/google/uuid"
 )
 
 func handlerGenerator(ev events.SQSEvent) error {
-	report := curseduca.Course{}
+	// report := curseduca.Course{}
+
 	c := config.LoadConfig(false)
 	sess := config.CreateAWSSession(c.AWS)
+	db := repository.Init(sess)
 
-	err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
+	id := uuid.NewString()
+	certificate := certificate.Certificate{
+		PK:   id,
+		SK:   id,
+		Name: "Mateus Malaquias",
+	}
+	log.Printf("INFO: certificate - %+v\n", certificate)
+
+	item, err := db.CreateOrUpdate(certificate, c.AWS.DynamoTableName)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERROR: CreateOrUpdate", err)
 		panic(err)
 	}
+	log.Printf("INFO: item - %+v\n", item)
 
-	log.Printf("INFO: report - %+v\n", report)
+	/*
+		err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
+		if err != nil {
+			log.Fatal(err)
+			panic(err)
+		}
 
-	if report.FinishedAt == nil {
-		log.Printf("WARN: skipping report FinishedAt not found")
-		return nil
-	}
+		log.Printf("INFO: report - %+v\n", report)
 
-	imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
-	imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
+		if report.FinishedAt == nil {
+			log.Printf("WARN: skipping report FinishedAt not found")
+			return nil
+		}
 
-	imgPage1 := utils.BucketGetObjectBytes(imgPage1Path, c.AWS.BucketName, sess)
-	imgPage2 := utils.BucketGetObjectBytes(imgPage2Path, c.AWS.BucketName, sess)
+		imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
+		imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
 
-	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
+		imgPage1 := utils.BucketGetObjectBytes(imgPage1Path, c.AWS.BucketName, sess)
+		imgPage2 := utils.BucketGetObjectBytes(imgPage2Path, c.AWS.BucketName, sess)
 
-	imgDraw := imagedraw.DrawAndEconde(imgPage1, []imagedraw.Field{{
-		Key: "FULL_NAME",
-		Text: imagedraw.FieldText{
-			FontSize:  50.0,
-			PositionX: 610,
-			PositionY: 430,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
-			Value:     report.Member.Name,
-		},
-	}, {
-		Key: "FINISH_AT",
-		Text: imagedraw.FieldText{
-			FontSize:  35.0,
-			PositionX: 1350,
-			PositionY: 665,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
-			Value:     formattedFinishedAt,
-		},
-	}, {
-		Key: "SIGNATURE",
-		Text: imagedraw.FieldText{
-			FontSize:  70.0,
-			PositionX: 1300,
-			PositionY: 830,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
-			Value:     strings.ToLower(report.Member.Name),
-		},
-	}})
+		formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
-	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
+		imgDraw := imagedraw.DrawAndEconde(imgPage1, []imagedraw.Field{{
+			Key: "FULL_NAME",
+			Text: imagedraw.FieldText{
+				FontSize:  50.0,
+				PositionX: 610,
+				PositionY: 430,
+				FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
+				Value:     report.Member.Name,
+			},
+		}, {
+			Key: "FINISH_AT",
+			Text: imagedraw.FieldText{
+				FontSize:  35.0,
+				PositionX: 1350,
+				PositionY: 665,
+				FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+				Value:     formattedFinishedAt,
+			},
+		}, {
+			Key: "SIGNATURE",
+			Text: imagedraw.FieldText{
+				FontSize:  70.0,
+				PositionX: 1300,
+				PositionY: 830,
+				FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
+				Value:     strings.ToLower(report.Member.Name),
+			},
+		}})
 
-	fileSavePath := "pdf/" + report.Member.Email + "/" + fmt.Sprintf("%d%s", report.ID, ".pdf")
+		pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
 
-	utils.BucketSaveObject(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
+		fileSavePath := "pdf/" + report.Member.Email + "/" + fmt.Sprintf("%d%s", report.ID, ".pdf")
+
+		utils.BucketSaveObject(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
+	*/
 
 	return nil
 }

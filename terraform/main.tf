@@ -46,6 +46,7 @@ module "lambda_generator" {
   depends_on       = [module.sqs_generator]
   environment = {
     AWS_BUCKET_NAME = var.aws_bucket_name
+    AWS_DYNAMO_TABLE_NAME = var.ddb_name
   }
 }
 
