@@ -3,7 +3,7 @@ package main
 import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
-	"ekoa-certificate-generator/internal/utils"
+	"ekoa-certificate-generator/internal/queue"
 	"encoding/json"
 	"log"
 
@@ -42,7 +42,7 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		}
 
 		jsonString := string(jsonData)
-		utils.QueueSendMessage(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
+		queue.SendMessage(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
 		count++
 	}
 
