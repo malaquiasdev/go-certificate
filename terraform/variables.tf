@@ -25,3 +25,4 @@ variable "lambda_indexer_timeout" {
   type    = number
   default = 30
 }
+variable "cursoeduca_block_list" { type = string }

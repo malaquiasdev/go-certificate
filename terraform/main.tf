@@ -38,6 +38,7 @@ module "lambda_importer" {
     CLASS_CURSEDUCA_BASE_URL = var.class_cursoeduca_base_url
     AWS_GENERATOR_QUEUE_URL  = module.sqs_generator.url
     AWS_DYNAMO_TABLE_NAME    = var.ddb_name
+    CURSEDUCA_BLOCK_LIST = var.cursoeduca_block_list
   }
 }
 

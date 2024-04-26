@@ -18,6 +18,7 @@ type Curseduca struct {
 	Username     string
 	Password     string
 	ApiKey       string
+	BlockList    string
 }
 
 type Config struct {
@@ -43,6 +44,7 @@ func LoadConfig(isLocal bool) Config {
 				Username:     utils.GetEnvLocal("PROF_CURSEDUCA_USERNAME", ""),
 				Password:     utils.GetEnvLocal("PROF_CURSEDUCA_PASSWORD", ""),
 				ApiKey:       utils.GetEnvLocal("CURSEDUCA_API_KEY", ""),
+				BlockList:    utils.GetEnvLocal("CURSEDUCA_BLOCK_LIST", ""),
 			},
 		}
 	}
@@ -62,6 +64,7 @@ func LoadConfig(isLocal bool) Config {
 			Username:     utils.GetEnv("PROF_CURSEDUCA_USERNAME", ""),
 			Password:     utils.GetEnv("PROF_CURSEDUCA_PASSWORD", ""),
 			ApiKey:       utils.GetEnv("CURSEDUCA_API_KEY", ""),
+			BlockList:    utils.GetEnv("CURSEDUCA_BLOCK_LIST", ""),
 		},
 	}
 }

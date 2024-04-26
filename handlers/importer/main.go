@@ -7,7 +7,9 @@ import (
 	"ekoa-certificate-generator/internal/db/models"
 	"ekoa-certificate-generator/internal/queue"
 	"encoding/json"
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -32,9 +34,9 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	log.Printf("INFO: reports totalCount - %+v\n", reports.Metadata.TotalCount)
 
 	count := 0
-	trainingCourseId := 342
 	for _, data := range reports.Data {
-		if data.Content.ID == trainingCourseId {
+		blocked := strings.Contains(c.Curseduca.BlockList, fmt.Sprint(data.Content.ID))
+		if blocked {
 			log.Printf("WARN: skipping training course - %+v\n", data)
 			continue
 		}
