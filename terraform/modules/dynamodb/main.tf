@@ -3,7 +3,6 @@ resource "aws_dynamodb_table" "this" {
   name  = var.name
 
   hash_key     = "PK"
-  range_key    = "SK"
   billing_mode = "PAY_PER_REQUEST"
 
   point_in_time_recovery {
@@ -16,41 +15,13 @@ resource "aws_dynamodb_table" "this" {
   }
 
   attribute {
-    name = "SK"
-    type = "S"
-  }
-
-  attribute {
-    name = "GS1PK"
-    type = "S"
-  }
-
-  attribute {
-    name = "GS1SK"
-    type = "S"
-  }
-
-  attribute {
-    name = "GS2PK"
-    type = "S"
-  }
-
-  attribute {
-    name = "GS2SK"
+    name = "studentEmail"
     type = "S"
   }
 
   global_secondary_index {
-    name            = "GS1PK"
-    hash_key        = "GS1PK"
-    range_key       = "GS1SK"
-    projection_type = "ALL"
-  }
-
-  global_secondary_index {
-    name            = "GS2PK"
-    hash_key        = "GS2PK"
-    range_key       = "GS2SK"
+    name            = "studentEmail"
+    hash_key        = "studentEmail"
     projection_type = "ALL"
   }
 }

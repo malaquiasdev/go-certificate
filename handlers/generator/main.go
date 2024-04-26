@@ -3,6 +3,7 @@ package main
 import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
+	"ekoa-certificate-generator/internal/db/models"
 	"ekoa-certificate-generator/internal/imagedraw"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
@@ -16,6 +17,7 @@ import (
 
 func handlerGenerator(ev events.SQSEvent) error {
 	report := curseduca.Course{}
+
 	c := config.LoadConfig(false)
 	sess := config.CreateAWSSession(c.AWS)
 
@@ -71,7 +73,22 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
 
-	fileSavePath := "pdf/" + report.Member.Email + "/" + fmt.Sprintf("%d%s", report.ID, ".pdf")
+	cert := models.Certificate{
+		ReportId:          report.ID,
+		ContentId:         report.Content.ID,
+		ContentSlug:       report.Content.Slug,
+		ContentTitle:      report.Content.Title,
+		CourseStartedAt:   *report.StartedAt,
+		CourseFinishedAt:  *report.FinishedAt,
+		StudentId:         report.Member.ID,
+		StudentName:       report.Member.Name,
+		StudentEmail:      report.Member.Email,
+		ExpiresAt:         report.ExpiresAt,
+		ExpirationEnabled: report.ExpirationEnabled,
+	}
+	cert.GenerateID()
+
+	fileSavePath := "pdf/" + report.Member.Email + "/" + cert.PK + ".pdf"
 
 	utils.BucketSaveObject(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
 
