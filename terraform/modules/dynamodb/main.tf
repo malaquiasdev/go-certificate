@@ -19,9 +19,20 @@ resource "aws_dynamodb_table" "this" {
     type = "S"
   }
 
+  attribute {
+    name = "reportId"
+    type = "S"
+  }
+
   global_secondary_index {
     name            = "studentEmail"
     hash_key        = "studentEmail"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name            = "reportId"
+    hash_key        = "reportId"
     projection_type = "ALL"
   }
 }

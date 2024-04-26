@@ -2,6 +2,7 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
+	"ekoa-certificate-generator/internal/bucket"
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/db/models"
 	"ekoa-certificate-generator/internal/imagedraw"
@@ -37,8 +38,8 @@ func handlerGenerator(ev events.SQSEvent) error {
 	imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
 	imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
 
-	imgPage1 := utils.BucketGetObjectBytes(imgPage1Path, c.AWS.BucketName, sess)
-	imgPage2 := utils.BucketGetObjectBytes(imgPage2Path, c.AWS.BucketName, sess)
+	imgPage1 := bucket.GetFileBytes(imgPage1Path, c.AWS.BucketName, sess)
+	imgPage2 := bucket.GetFileBytes(imgPage2Path, c.AWS.BucketName, sess)
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
@@ -48,7 +49,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  50.0,
 			PositionX: 610,
 			PositionY: 430,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
+			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
 			Value:     report.Member.Name,
 		},
 	}, {
@@ -57,7 +58,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  35.0,
 			PositionX: 1350,
 			PositionY: 665,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
 			Value:     formattedFinishedAt,
 		},
 	}, {
@@ -66,7 +67,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  70.0,
 			PositionX: 1300,
 			PositionY: 830,
-			FontBytes: utils.BucketGetObjectBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
+			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
 			Value:     strings.ToLower(report.Member.Name),
 		},
 	}})
@@ -90,7 +91,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	fileSavePath := "pdf/" + report.Member.Email + "/" + cert.PK + ".pdf"
 
-	utils.BucketSaveObject(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
+	bucket.SaveFile(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
 
 	return nil
 }

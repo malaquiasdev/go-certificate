@@ -3,6 +3,8 @@ package main
 import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
+	"ekoa-certificate-generator/internal/db"
+	"ekoa-certificate-generator/internal/db/models"
 	"ekoa-certificate-generator/internal/queue"
 	"encoding/json"
 	"log"
@@ -14,6 +16,7 @@ import (
 func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	c := config.LoadConfig(false)
 	sess := config.CreateAWSSession(c.AWS)
+	db := db.Init(sess)
 
 	auth, err := curseduca.Login(c.Curseduca)
 	if err != nil {
@@ -32,6 +35,19 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	for _, data := range reports.Data {
 		if data.FinishedAt == nil {
 			log.Printf("WARN: skipping report FinishedAt not found - %+v\n", data)
+			continue
+		}
+
+		filter := models.Certificate{
+			ReportId: data.ID,
+		}
+
+		cert, err := db.GetOne(filter.GetFilterReportId(), c.AWS.DynamoTableName)
+		if err != nil {
+			log.Printf("INFO: certificate not found to ReportId - %+v\n", data.ID)
+		}
+		if cert != nil {
+			log.Printf("WARN: skipping certificate found to ReportId - %+v\n", data)
 			continue
 		}
 

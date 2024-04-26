@@ -1,10 +1,10 @@
 package models
 
 import (
+	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"errors"
 	"strconv"
-	"time"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/google/uuid"
@@ -112,8 +112,16 @@ func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (
 	return c, nil
 }
 
-func (c *Certificate) GetFilterId() map[string]interface{} {
-	return map[string]interface{}{"id": c.PK}
+func (c *Certificate) GetFilterPK() map[string]interface{} {
+	return map[string]interface{}{"PK": c.PK}
+}
+
+func (c *Certificate) GetFilterReportId() map[string]interface{} {
+	return map[string]interface{}{"reportId": c.ReportId}
+}
+
+func (c *Certificate) GetFilterEmail() map[string]interface{} {
+	return map[string]interface{}{"studentEmail": c.StudentEmail}
 }
 
 func (c *Certificate) Bytes() ([]byte, error) {
@@ -126,11 +134,11 @@ func (c *Certificate) GenerateID() {
 }
 
 func (c *Certificate) SetCreatedAt() {
-	c.CreatedAt = time.Now().Format(GetTimeFormat())
+	c.CreatedAt = utils.GetDateTimeNowFormatted()
 }
 
 func (c *Certificate) SetUpdatedAt() {
-	c.UpdatedAt = time.Now().Format(GetTimeFormat())
+	c.UpdatedAt = utils.GetDateTimeNowFormatted()
 }
 
 func GetTimeFormat() string {

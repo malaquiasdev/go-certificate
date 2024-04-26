@@ -10,3 +10,8 @@ func FormatDateTimeToDateOnly(fullDateTime *string) (string, error) {
 	formatted := dateTime.Format("02/01/2006")
 	return formatted, nil
 }
+
+func GetDateTimeNowFormatted() string {
+	brazlianPattern := "02/01/2006 03:04:05"
+	return time.Now().Format(brazlianPattern)
+}
