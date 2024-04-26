@@ -42,12 +42,10 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 			ReportId: data.ID,
 		}
 
-		cert, err := db.GetOne(filter.GetFilterReportId(), c.AWS.DynamoTableName)
-		if err != nil {
-			log.Printf("INFO: certificate not found to ReportId - %+v\n", data.ID)
-		}
-		if cert != nil {
-			log.Printf("WARN: skipping certificate found to ReportId - %+v\n", data)
+		dbRes, _ := db.GetOne(filter.GetFilterReportId(), c.AWS.DynamoTableName)
+		cert, err := models.ParseDynamoAtributeToStruct(dbRes.Item)
+		if err == nil {
+			log.Printf("WARN: skipping certificate found to ReportId - %+v\n", cert)
 			continue
 		}
 

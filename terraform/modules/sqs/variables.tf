@@ -8,3 +8,4 @@ variable "max_message_size" {
   type    = number
   default = 262144
 }
+variable "visibility_timeout_seconds" { type = number }

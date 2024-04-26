@@ -8,6 +8,7 @@ module "sqs_generator" {
   source        = "./modules/sqs"
   name          = "${var.project_name}-generator"
   delay_seconds = 30
+  visibility_timeout_seconds = var.lambda_generator_timeout
 }
 
 module "lambda_importer" {
@@ -20,7 +21,7 @@ module "lambda_importer" {
   source_code_hash = base64sha256(var.importer_source_code)
   timeout          = 300
   memory_size      = 1024
-  log_retention    = 90
+  log_retention    = var.lambda_days_log_retention
   depends_on       = [module.sqs_generator]
   environment = {
     PROF_CURSEDUCA_USERNAME  = var.prof_cursoeduca_username
@@ -40,9 +41,9 @@ module "lambda_generator" {
   role_arn         = aws_iam_role.lambda_generator_role.arn
   filename         = var.generator_source_code
   source_code_hash = base64sha256(var.generator_source_code)
-  timeout          = 60
+  timeout          = var.lambda_generator_timeout
   memory_size      = 1024
-  log_retention    = 90
+  log_retention    = var.lambda_days_log_retention
   depends_on       = [module.sqs_generator]
   environment = {
     AWS_BUCKET_NAME       = var.aws_bucket_name

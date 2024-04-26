@@ -12,3 +12,11 @@ variable "prof_cursoeduca_base_url" { type = string }
 variable "cursoeduca_api_key" { type = string }
 variable "class_cursoeduca_base_url" { type = string }
 variable "ddb_name" { type = string }
+variable "lambda_generator_timeout" {
+  type = number
+  default = 60
+}
+variable "lambda_days_log_retention" {
+  type = number
+  default = 90
+}
