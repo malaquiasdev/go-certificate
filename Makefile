@@ -12,7 +12,16 @@ build-generator:
 	- chmod +x bin/bootstrap
 	- cd bin/ && zip -j generator_lambda.zip bootstrap
 
+build-indexer:
+	- cd handlers/indexer && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../bin/bootstrap *.go
+	- chmod +x bin/bootstrap
+	- cd bin/ && zip -j indexer_lambda.zip bootstrap
+
 deploy:
 	- make build-generator
 	- make build-importer
+	- make build-indexer
+	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve
+
+deploy-fast:
 	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve

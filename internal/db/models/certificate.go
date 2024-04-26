@@ -26,6 +26,7 @@ type Certificate struct {
 	ExpirationEnabled bool   `json:"expirationEnabled"`
 	CreatedAt         string `json:"createdAt"`
 	UpdatedAt         string `json:"updatedAt"`
+	FilePath          string `json:"filePath"`
 }
 
 func InterfaceToModel(data interface{}) (instance *Certificate, err error) {
@@ -54,6 +55,7 @@ func (c *Certificate) GetMap() map[string]interface{} {
 		"expirationEnabled": c.ExpirationEnabled,
 		"createdAt":         c.CreatedAt,
 		"updatedAt":         c.UpdatedAt,
+		"filePath":          c.FilePath,
 	}
 }
 
@@ -107,6 +109,9 @@ func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (
 		if key == "updatedAt" {
 			c.UpdatedAt = *value.S
 		}
+		if key == "filePath" {
+			c.FilePath = *value.S
+		}
 	}
 
 	return c, nil
@@ -139,6 +144,10 @@ func (c *Certificate) SetCreatedAt() {
 
 func (c *Certificate) SetUpdatedAt() {
 	c.UpdatedAt = utils.GetDateTimeNowFormatted()
+}
+
+func (c *Certificate) SetFilePath() {
+	c.FilePath = "pdf/" + c.StudentEmail + "/" + c.PK + ".pdf"
 }
 
 func GetTimeFormat() string {

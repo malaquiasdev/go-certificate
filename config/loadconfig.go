@@ -9,6 +9,7 @@ type AWS struct {
 	GeneretorQueueUrl string
 	BucketName        string
 	DynamoTableName   string
+	IndexerQueueUrl   string
 }
 
 type Curseduca struct {
@@ -34,6 +35,7 @@ func LoadConfig(isLocal bool) Config {
 				GeneretorQueueUrl: utils.GetEnvLocal("AWS_GENERATOR_QUEUE_URL", ""),
 				BucketName:        utils.GetEnvLocal("AWS_BUCKET_NAME", ""),
 				DynamoTableName:   utils.GetEnvLocal("AWS_DYNAMO_TABLE_NAME", ""),
+				IndexerQueueUrl:   utils.GetEnvLocal("AWS_INDEXER_QUEUE_URL", ""),
 			},
 			Curseduca: Curseduca{
 				ClassBaseUrl: utils.GetEnvLocal("CLASS_CURSEDUCA_BASE_URL", ""),
@@ -52,6 +54,7 @@ func LoadConfig(isLocal bool) Config {
 			GeneretorQueueUrl: utils.GetEnv("AWS_GENERATOR_QUEUE_URL", ""),
 			BucketName:        utils.GetEnv("AWS_BUCKET_NAME", ""),
 			DynamoTableName:   utils.GetEnv("AWS_DYNAMO_TABLE_NAME", ""),
+			IndexerQueueUrl:   utils.GetEnv("AWS_INDEXER_QUEUE_URL", ""),
 		},
 		Curseduca: Curseduca{
 			ClassBaseUrl: utils.GetEnv("CLASS_CURSEDUCA_BASE_URL", ""),

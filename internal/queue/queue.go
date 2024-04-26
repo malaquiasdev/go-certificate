@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"log"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -8,8 +10,13 @@ import (
 
 func SendMessage(messageBody string, queueUrl string, awsSession *session.Session) {
 	client := sqs.New(awsSession)
-	client.SendMessage(&sqs.SendMessageInput{
+	_, err := client.SendMessage(&sqs.SendMessageInput{
 		QueueUrl:    aws.String(queueUrl),
 		MessageBody: aws.String(messageBody),
 	})
+
+	if err != nil {
+		log.Fatal("ERROR: failed to send sqs message", err)
+		panic(err)
+	}
 }

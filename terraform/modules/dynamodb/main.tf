@@ -21,7 +21,7 @@ resource "aws_dynamodb_table" "this" {
 
   attribute {
     name = "reportId"
-    type = "S"
+    type = "N"
   }
 
   global_secondary_index {

@@ -6,6 +6,7 @@ import (
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/db/models"
 	"ekoa-certificate-generator/internal/imagedraw"
+	"ekoa-certificate-generator/internal/queue"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"fmt"
@@ -88,10 +89,18 @@ func handlerGenerator(ev events.SQSEvent) error {
 		ExpirationEnabled: report.ExpirationEnabled,
 	}
 	cert.GenerateID()
+	cert.SetFilePath()
 
-	fileSavePath := "pdf/" + report.Member.Email + "/" + cert.PK + ".pdf"
+	bucket.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName, sess)
 
-	bucket.SaveFile(pdf.Bytes(), fileSavePath, c.AWS.BucketName, sess)
+	jsonData, err := json.Marshal(cert)
+	if err != nil {
+		log.Fatal("ERROR: parse certificate to json", err)
+		panic(err)
+	}
+
+	jsonString := string(jsonData)
+	queue.SendMessage(string(jsonString), c.AWS.IndexerQueueUrl, sess)
 
 	return nil
 }

@@ -1,6 +1,6 @@
 resource "aws_sqs_queue" "main" {
-  name          = var.name
-  delay_seconds = var.delay_seconds
+  name                       = var.name
+  delay_seconds              = var.delay_seconds
   visibility_timeout_seconds = var.visibility_timeout_seconds
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn,

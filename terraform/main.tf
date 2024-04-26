@@ -5,10 +5,17 @@ module "dynamodb_certificates" {
 }
 
 module "sqs_generator" {
-  source        = "./modules/sqs"
-  name          = "${var.project_name}-generator"
-  delay_seconds = 30
+  source                     = "./modules/sqs"
+  name                       = "${var.project_name}-generator"
+  delay_seconds              = 30
   visibility_timeout_seconds = var.lambda_generator_timeout
+}
+
+module "sqs_indexer" {
+  source                     = "./modules/sqs"
+  name                       = "${var.project_name}-indexer"
+  delay_seconds              = 30
+  visibility_timeout_seconds = var.lambda_indexer_timeout
 }
 
 module "lambda_importer" {
@@ -30,6 +37,7 @@ module "lambda_importer" {
     CURSEDUCA_API_KEY        = var.cursoeduca_api_key
     CLASS_CURSEDUCA_BASE_URL = var.class_cursoeduca_base_url
     AWS_GENERATOR_QUEUE_URL  = module.sqs_generator.url
+    AWS_DYNAMO_TABLE_NAME    = var.ddb_name
   }
 }
 
@@ -44,9 +52,26 @@ module "lambda_generator" {
   timeout          = var.lambda_generator_timeout
   memory_size      = 1024
   log_retention    = var.lambda_days_log_retention
-  depends_on       = [module.sqs_generator]
+  depends_on       = [module.sqs_generator, module.sqs_indexer]
   environment = {
     AWS_BUCKET_NAME       = var.aws_bucket_name
+    AWS_INDEXER_QUEUE_URL = module.sqs_indexer.url
+  }
+}
+
+module "lambda_indexer" {
+  source           = "./modules/lambda"
+  name             = "${var.project_name}-indexer"
+  handler_path     = "bootstrap"
+  runtime          = "provided.al2023"
+  role_arn         = aws_iam_role.lambda_generator_role.arn
+  filename         = var.indexer_source_code
+  source_code_hash = base64sha256(var.indexer_source_code)
+  timeout          = var.lambda_indexer_timeout
+  memory_size      = 1024
+  log_retention    = var.lambda_days_log_retention
+  depends_on       = [module.sqs_indexer]
+  environment = {
     AWS_DYNAMO_TABLE_NAME = var.ddb_name
   }
 }
@@ -55,6 +80,14 @@ resource "aws_lambda_event_source_mapping" "lambda_generator_event" {
   depends_on       = [module.sqs_generator, module.lambda_generator]
   event_source_arn = module.sqs_generator.arn
   function_name    = module.lambda_generator.lambda_arn
+  enabled          = true
+  batch_size       = 1
+}
+
+resource "aws_lambda_event_source_mapping" "lambda_indexer_event" {
+  depends_on       = [module.sqs_indexer, module.lambda_indexer]
+  event_source_arn = module.sqs_indexer.arn
+  function_name    = module.lambda_indexer.lambda_arn
   enabled          = true
   batch_size       = 1
 }

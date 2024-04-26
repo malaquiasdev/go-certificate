@@ -32,7 +32,13 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	log.Printf("INFO: reports totalCount - %+v\n", reports.Metadata.TotalCount)
 
 	count := 0
+	trainingCourseId := 342
 	for _, data := range reports.Data {
+		if data.Content.ID == trainingCourseId {
+			log.Printf("WARN: skipping training course - %+v\n", data)
+			continue
+		}
+
 		if data.FinishedAt == nil {
 			log.Printf("WARN: skipping report FinishedAt not found - %+v\n", data)
 			continue
@@ -45,7 +51,7 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		dbRes, _ := db.GetOne(filter.GetFilterReportId(), c.AWS.DynamoTableName)
 		cert, err := models.ParseDynamoAtributeToStruct(dbRes.Item)
 		if err == nil {
-			log.Printf("WARN: skipping certificate found to ReportId - %+v\n", cert)
+			log.Printf("WARN: skipping certificate found - %+v\n", cert)
 			continue
 		}
 
