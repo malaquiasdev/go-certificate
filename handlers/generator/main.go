@@ -80,7 +80,6 @@ func handlerGenerator(ev events.SQSEvent) error {
 		ContentId:         report.Content.ID,
 		ContentSlug:       report.Content.Slug,
 		ContentTitle:      report.Content.Title,
-		CourseStartedAt:   *report.StartedAt,
 		CourseFinishedAt:  *report.FinishedAt,
 		StudentId:         report.Member.ID,
 		StudentName:       report.Member.Name,
@@ -93,14 +92,12 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	bucket.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName, sess)
 
-	jsonData, err := json.Marshal(cert)
+	certStr, err := cert.ToString()
 	if err != nil {
-		log.Fatal("ERROR: parse certificate to json", err)
-		panic(err)
+		return err
 	}
 
-	jsonString := string(jsonData)
-	queue.SendMessage(string(jsonString), c.AWS.IndexerQueueUrl, sess)
+	queue.SendMessage(certStr, c.AWS.IndexerQueueUrl, sess)
 
 	return nil
 }
