@@ -25,8 +25,8 @@ func handlerGenerator(ev events.SQSEvent) error {
 
 	err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
 	if err != nil {
-		log.Fatal(err)
-		panic(err)
+		log.Fatal("ERROR: parse event body to report", err)
+		return err
 	}
 
 	log.Printf("INFO: report - %+v\n", report)
@@ -35,6 +35,22 @@ func handlerGenerator(ev events.SQSEvent) error {
 		log.Printf("WARN: skipping report FinishedAt not found")
 		return nil
 	}
+
+	cert := models.Certificate{
+		ReportId:          report.ID,
+		ContentId:         report.Content.ID,
+		ContentSlug:       report.Content.Slug,
+		ContentTitle:      report.Content.Title,
+		CourseFinishedAt:  *report.FinishedAt,
+		StudentId:         report.Member.ID,
+		StudentName:       report.Member.Name,
+		StudentEmail:      report.Member.Email,
+		ExpiresAt:         report.ExpiresAt,
+		ExpirationEnabled: report.ExpirationEnabled,
+	}
+	cert.GenerateID()
+	cert.SetFilePath()
+	cert.SetPublicUrl(c.UrlPrefix)
 
 	imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
 	imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
@@ -71,24 +87,18 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
 			Value:     strings.ToLower(report.Member.Name),
 		},
+	}, {
+		Key: "AUTHENTITCATION_KEY",
+		Text: imagedraw.FieldText{
+			FontSize:  20.0,
+			PositionX: 500,
+			PositionY: 1030,
+			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+			Value:     cert.PublicUrl,
+		},
 	}})
 
 	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
-
-	cert := models.Certificate{
-		ReportId:          report.ID,
-		ContentId:         report.Content.ID,
-		ContentSlug:       report.Content.Slug,
-		ContentTitle:      report.Content.Title,
-		CourseFinishedAt:  *report.FinishedAt,
-		StudentId:         report.Member.ID,
-		StudentName:       report.Member.Name,
-		StudentEmail:      report.Member.Email,
-		ExpiresAt:         report.ExpiresAt,
-		ExpirationEnabled: report.ExpirationEnabled,
-	}
-	cert.GenerateID()
-	cert.SetFilePath()
 
 	bucket.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName, sess)
 

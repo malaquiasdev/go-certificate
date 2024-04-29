@@ -37,7 +37,7 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	for _, data := range reports.Data {
 		blocked := strings.Contains(c.Curseduca.BlockList, fmt.Sprint(data.Content.ID))
 		if blocked {
-			log.Printf("WARN: skipping training course - %+v\n", data)
+			log.Printf("WARN: skipping training course blocked - %+v\n", data)
 			continue
 		}
 
@@ -46,16 +46,22 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 			continue
 		}
 
+		log.Printf("INFO: report data - %+v\n", data)
+
 		filter := models.Certificate{
-			ReportId: data.ID,
+			StudentEmail: data.Member.Email,
 		}
 
-		dbRes, _ := db.GetOne(filter.GetFilterReportId(), c.AWS.DynamoTableName)
-		cert, err := models.ParseDynamoAtributeToStruct(dbRes.Item)
-		if err == nil {
-			log.Printf("WARN: skipping certificate found - %+v\n", cert)
+		log.Printf("INFO: certificate filter - %+v\n", filter)
+		log.Printf("INFO: GetFilterReportId - %+v\n", filter.GetFilterEmail())
+
+		dbRes, _ := db.GetOne(filter.GetFilterEmail(), c.AWS.DynamoTableName)
+		if len(dbRes.Item) != 0 {
+			log.Printf("WARN: skipping certificate found - %+v\n", dbRes.Item)
 			continue
 		}
+
+		log.Printf("WARN: skipping certificate not found - %+v\n", dbRes.Item)
 
 		jsonData, err := json.Marshal(data)
 		if err != nil {

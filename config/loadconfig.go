@@ -24,6 +24,7 @@ type Curseduca struct {
 type Config struct {
 	AWS       AWS
 	Curseduca Curseduca
+	UrlPrefix string
 }
 
 func LoadConfig(isLocal bool) Config {
@@ -46,6 +47,7 @@ func LoadConfig(isLocal bool) Config {
 				ApiKey:       utils.GetEnvLocal("CURSEDUCA_API_KEY", ""),
 				BlockList:    utils.GetEnvLocal("CURSEDUCA_BLOCK_LIST", ""),
 			},
+			UrlPrefix: utils.GetEnvLocal("CERTIFICATE_URL_PREFIX", ""),
 		}
 	}
 	return Config{
@@ -66,5 +68,6 @@ func LoadConfig(isLocal bool) Config {
 			ApiKey:       utils.GetEnv("CURSEDUCA_API_KEY", ""),
 			BlockList:    utils.GetEnv("CURSEDUCA_BLOCK_LIST", ""),
 		},
+		UrlPrefix: utils.GetEnv("CERTIFICATE_URL_PREFIX", ""),
 	}
 }

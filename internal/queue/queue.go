@@ -9,6 +9,8 @@ import (
 )
 
 func SendMessage(messageBody string, queueUrl string, awsSession *session.Session) {
+	log.Printf("INFO: sending event message - %+v\n", messageBody)
+
 	client := sqs.New(awsSession)
 	_, err := client.SendMessage(&sqs.SendMessageInput{
 		QueueUrl:    aws.String(queueUrl),

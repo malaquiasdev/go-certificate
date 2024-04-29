@@ -15,14 +15,15 @@ variable "class_cursoeduca_base_url" { type = string }
 variable "ddb_name" { type = string }
 variable "lambda_generator_timeout" {
   type    = number
-  default = 60
+  default = 300
 }
 variable "lambda_days_log_retention" {
   type    = number
-  default = 90
+  default = 14
 }
 variable "lambda_indexer_timeout" {
   type    = number
-  default = 30
+  default = 60
 }
 variable "cursoeduca_block_list" { type = string }
+variable "certificate_url_prefix" { type = string }

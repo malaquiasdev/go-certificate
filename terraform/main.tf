@@ -7,14 +7,14 @@ module "dynamodb_certificates" {
 module "sqs_generator" {
   source                     = "./modules/sqs"
   name                       = "${var.project_name}-generator"
-  delay_seconds              = 30
+  delay_seconds              = 15
   visibility_timeout_seconds = var.lambda_generator_timeout
 }
 
 module "sqs_indexer" {
   source                     = "./modules/sqs"
   name                       = "${var.project_name}-indexer"
-  delay_seconds              = 30
+  delay_seconds              = 5
   visibility_timeout_seconds = var.lambda_indexer_timeout
 }
 
@@ -57,6 +57,7 @@ module "lambda_generator" {
   environment = {
     AWS_BUCKET_NAME       = var.aws_bucket_name
     AWS_INDEXER_QUEUE_URL = module.sqs_indexer.url
+    CERTIFICATE_URL_PREFIX = var.certificate_url_prefix
   }
 }
 
