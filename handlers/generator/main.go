@@ -21,9 +21,19 @@ func handlerGenerator(ev events.SQSEvent) error {
 	report := curseduca.Course{}
 
 	c := config.LoadConfig(false)
-	sess := config.CreateAWSSession(c.AWS)
+	queue, err := queue.NewClient(c.AWS)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with SQS", err)
+		return err
+	}
 
-	err := json.Unmarshal([]byte(ev.Records[0].Body), &report)
+	b, err := bucket.NewClient(c.AWS)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with Bucket S3", err)
+		return err
+	}
+
+	err = json.Unmarshal([]byte(ev.Records[0].Body), &report)
 	if err != nil {
 		log.Fatal("ERROR: parse event body to report", err)
 		return err
@@ -52,21 +62,47 @@ func handlerGenerator(ev events.SQSEvent) error {
 	cert.SetFilePath()
 	cert.SetPublicUrl(c.UrlPrefix)
 
-	imgPage1Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
-	imgPage2Path := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
+	coverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
+	backCoverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
 
-	imgPage1 := bucket.GetFileBytes(imgPage1Path, c.AWS.BucketName, sess)
-	imgPage2 := bucket.GetFileBytes(imgPage2Path, c.AWS.BucketName, sess)
+	coverImg, err := b.GetFileBytes(coverPath, c.AWS.BucketName)
+	if err != nil {
+		log.Fatal("ERROR: GET cover image", err)
+		return err
+	}
+	backCoverImg, err := b.GetFileBytes(backCoverPath, c.AWS.BucketName)
+	if err != nil {
+		log.Fatal("ERROR: GET back cover image", err)
+		return err
+	}
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
 
-	imgDraw := imagedraw.DrawAndEconde(imgPage1, []imagedraw.Field{{
+	fontSans, err := b.GetFileBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName)
+	if err != nil {
+		log.Fatal("ERROR: GET EncodeSansExpanded font", err)
+		return err
+	}
+
+	fontMont, err := b.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName)
+	if err != nil {
+		log.Fatal("ERROR: GET Montserrat font", err)
+		return err
+	}
+
+	fontSign, err := b.GetFileBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName)
+	if err != nil {
+		log.Fatal("ERROR: GET Thesignature font", err)
+		return err
+	}
+
+	imgDraw := imagedraw.DrawAndEconde(coverImg, []imagedraw.Field{{
 		Key: "FULL_NAME",
 		Text: imagedraw.FieldText{
 			FontSize:  50.0,
 			PositionX: 610,
 			PositionY: 430,
-			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName, sess),
+			FontBytes: fontSans,
 			Value:     report.Member.Name,
 		},
 	}, {
@@ -75,7 +111,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  35.0,
 			PositionX: 1350,
 			PositionY: 665,
-			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+			FontBytes: fontMont,
 			Value:     formattedFinishedAt,
 		},
 	}, {
@@ -84,7 +120,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  70.0,
 			PositionX: 1300,
 			PositionY: 830,
-			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName, sess),
+			FontBytes: fontSign,
 			Value:     strings.ToLower(report.Member.Name),
 		},
 	}, {
@@ -93,21 +129,22 @@ func handlerGenerator(ev events.SQSEvent) error {
 			FontSize:  20.0,
 			PositionX: 500,
 			PositionY: 1030,
-			FontBytes: bucket.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName, sess),
+			FontBytes: fontMont,
 			Value:     cert.PublicUrl,
 		},
 	}})
 
-	pdf := imagedraw.ImageToPdf(imgDraw, imgPage2)
+	pdf := imagedraw.ImageToPdf(imgDraw, backCoverImg)
 
-	bucket.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName, sess)
+	b.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName)
 
 	certStr, err := cert.ToString()
 	if err != nil {
+		log.Fatal("ERROR: parse certificate to string", err)
 		return err
 	}
 
-	queue.SendMessage(certStr, c.AWS.IndexerQueueUrl, sess)
+	queue.Send(certStr, c.AWS.IndexerQueueUrl)
 
 	return nil
 }

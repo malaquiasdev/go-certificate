@@ -17,7 +17,12 @@ import (
 
 func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	c := config.LoadConfig(false)
-	sess := config.CreateAWSSession(c.AWS)
+	queue, err := queue.NewClient(c.AWS)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with SQS", err)
+		return err
+	}
+	sess, err := config.CreateAWSSession(c.AWS)
 	db := db.Init(sess)
 
 	auth, err := curseduca.Login(c.Curseduca)
@@ -76,8 +81,11 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 			panic(err)
 		}
 
-		jsonString := string(jsonData)
-		queue.SendMessage(string(jsonString), c.AWS.GeneretorQueueUrl, sess)
+		messageBody := string(jsonData)
+		err = queue.Send(messageBody, c.AWS.GeneretorQueueUrl)
+		if err != nil {
+			return err
+		}
 		count++
 	}
 

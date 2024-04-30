@@ -4,7 +4,6 @@ import (
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"errors"
-	"log"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -44,7 +43,6 @@ func InterfaceToModel(data interface{}) (instance *Certificate, err error) {
 func (c *Certificate) ToString() (string, error) {
 	jsonData, err := json.Marshal(c)
 	if err != nil {
-		log.Fatal("ERROR: parse certificate to string", err)
 		return "", err
 	}
 
