@@ -29,6 +29,7 @@ type Certificate struct {
 	CreatedAt         string `json:"createdAt"`
 	UpdatedAt         string `json:"updatedAt"`
 	FilePath          string `json:"filePath"`
+	PublicUrl         string `json:"publicUrl"`
 }
 
 func InterfaceToModel(data interface{}) (instance *Certificate, err error) {
@@ -68,6 +69,7 @@ func (c *Certificate) GetMap() map[string]interface{} {
 		"createdAt":         c.CreatedAt,
 		"updatedAt":         c.UpdatedAt,
 		"filePath":          c.FilePath,
+		"publicUrl":         c.PublicUrl,
 	}
 }
 
@@ -124,6 +126,9 @@ func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (
 		if key == "filePath" {
 			c.FilePath = *value.S
 		}
+		if key == "publicUrl" {
+			c.PublicUrl = *value.S
+		}
 	}
 
 	return c, nil
@@ -176,6 +181,6 @@ func (c *Certificate) SetFilePath() {
 	c.FilePath = "pdf/" + c.StudentEmail + "/" + c.PK + ".pdf"
 }
 
-func GetTimeFormat() string {
-	return "2006-01-02T15:04:05-0700"
+func (c *Certificate) SetPublicUrl(urlPrefix string) {
+	c.PublicUrl = urlPrefix + "/f" + c.PK
 }
