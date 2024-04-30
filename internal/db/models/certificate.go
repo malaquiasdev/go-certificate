@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 	"github.com/google/uuid"
 )
 
@@ -132,12 +133,26 @@ func (c *Certificate) GetFilterPK() map[string]interface{} {
 	return map[string]interface{}{"PK": c.PK}
 }
 
-func (c *Certificate) GetFilterReportId() map[string]interface{} {
-	return map[string]interface{}{"reportId": c.ReportId}
+func (c *Certificate) GetFilterReportId() (condition expression.Expression, err error) {
+	keyCond := expression.Key("reportId").Equal(expression.Value(c.ReportId))
+	condition, err = expression.NewBuilder().WithKeyCondition(keyCond).Build()
+
+	if err != nil {
+		return condition, err
+	}
+
+	return condition, nil
 }
 
-func (c *Certificate) GetFilterEmail() map[string]interface{} {
-	return map[string]interface{}{"studentEmail": c.StudentEmail}
+func (c *Certificate) GetFilterEmail() (condition expression.Expression, err error) {
+	keyCond := expression.Key("studentEmail").Equal(expression.Value(c.StudentEmail))
+	condition, err = expression.NewBuilder().WithKeyCondition(keyCond).Build()
+
+	if err != nil {
+		return condition, err
+	}
+
+	return condition, nil
 }
 
 func (c *Certificate) Bytes() ([]byte, error) {
