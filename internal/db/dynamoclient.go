@@ -16,6 +16,7 @@ type Dynamo struct {
 type DynamoDBInterface interface {
 	ScanAll(condition expression.Expression, tableName string) (response *dynamodb.ScanOutput, err error)
 	GetOne(condition map[string]interface{}, tableName string) (response *dynamodb.GetItemOutput, err error)
+	Query(condition expression.Expression, indexName string, tableName string) (response *dynamodb.QueryOutput, err error)
 	CreateOrUpdate(entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error)
 	Delete(condition map[string]interface{}, tableName string) (response *dynamodb.DeleteItemOutput, err error)
 }
@@ -49,6 +50,17 @@ func (db *Dynamo) GetOne(condition map[string]interface{}, tableName string) (re
 		Key:       conditionParsed,
 	}
 	return db.connection.GetItem(input)
+}
+
+func (db *Dynamo) Query(condition expression.Expression, indexName string, tableName string) (response *dynamodb.QueryOutput, err error) {
+	query := &dynamodb.QueryInput{
+		IndexName:                 aws.String(indexName),
+		TableName:                 aws.String(tableName),
+		KeyConditionExpression:    condition.KeyCondition(),
+		ExpressionAttributeValues: condition.Values(),
+		ExpressionAttributeNames:  condition.Names(),
+	}
+	return db.connection.Query(query)
 }
 
 func (db *Dynamo) CreateOrUpdate(entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error) {

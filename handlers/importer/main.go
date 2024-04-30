@@ -48,20 +48,27 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 
 		log.Printf("INFO: report data - %+v\n", data)
 
-		filter := models.Certificate{
-			StudentEmail: data.Member.Email,
+		cert := models.Certificate{
+			ReportId: data.ID,
 		}
 
-		log.Printf("INFO: certificate filter - %+v\n", filter)
-		log.Printf("INFO: GetFilterReportId - %+v\n", filter.GetFilterEmail())
-
-		dbRes, _ := db.GetOne(filter.GetFilterEmail(), c.AWS.DynamoTableName)
-		if len(dbRes.Item) != 0 {
-			log.Printf("WARN: skipping certificate found - %+v\n", dbRes.Item)
+		cond, err := cert.GetFilterReportId()
+		if err != nil {
+			log.Printf("WARN: skipping GetFilterEmail")
 			continue
 		}
 
-		log.Printf("WARN: skipping certificate not found - %+v\n", dbRes.Item)
+		dbRes, err := db.Query(cond, "reportId", c.AWS.DynamoTableName)
+		if err != nil {
+			log.Printf("WARN: query error - %+v\n", err)
+		}
+
+		if len(dbRes.Items) != 0 {
+			log.Printf("WARN: skipping certificate found - %+v\n", dbRes.Items)
+			continue
+		}
+
+		log.Printf("WARN: skipping certificate not found - %+v\n", dbRes.Items)
 
 		jsonData, err := json.Marshal(data)
 		if err != nil {

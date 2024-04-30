@@ -34,7 +34,8 @@ resource "aws_iam_policy" "lambda_importer_policy" {
             ],
             "Resource": [
                 "arn:aws:logs:*:*:*",
-                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}"
+                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}",
+                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}/index/*"
             ]
         }
     ]
