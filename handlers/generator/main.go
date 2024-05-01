@@ -4,7 +4,7 @@ import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/bucket"
 	"ekoa-certificate-generator/internal/curseduca"
-	"ekoa-certificate-generator/internal/db/models"
+	"ekoa-certificate-generator/internal/db/model"
 	imgDraw "ekoa-certificate-generator/internal/image_draw"
 	"ekoa-certificate-generator/internal/queue"
 	"ekoa-certificate-generator/internal/utils"
@@ -46,7 +46,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 		return nil
 	}
 
-	cert := models.Certificate{
+	cert := model.Certificate{
 		ReportId:          report.ID,
 		ContentId:         report.Content.ID,
 		ContentSlug:       report.Content.Slug,

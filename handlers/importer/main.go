@@ -4,7 +4,7 @@ import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/db"
-	"ekoa-certificate-generator/internal/db/models"
+	"ekoa-certificate-generator/internal/db/model"
 	"ekoa-certificate-generator/internal/queue"
 	"encoding/json"
 	"fmt"
@@ -22,20 +22,24 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		log.Fatal("ERROR: failed to connect with SQS", err)
 		return err
 	}
-	sess, err := config.CreateAWSSession(c.AWS)
-	db := db.Init(sess)
+	db, err := db.NewClient(c.AWS)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with DynamoDB", err)
+		return err
+	}
 
 	auth, err := curseduca.Login(c.Curseduca)
 	if err != nil {
-		log.Fatal(err)
-		panic(err)
+		log.Fatal("ERROR: failed to connect with curseduca", err)
+		return err
 	}
 
 	reports, err := curseduca.FindReportEnrollment(auth, c.Curseduca)
 	if err != nil {
-		log.Fatal(err)
-		panic(err)
+		log.Fatal("ERROR: failed to find report enrollment", err)
+		return err
 	}
+
 	log.Printf("INFO: reports totalCount - %+v\n", reports.Metadata.TotalCount)
 
 	count := 0
@@ -53,17 +57,11 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 
 		log.Printf("INFO: report data - %+v\n", data)
 
-		cert := models.Certificate{
+		cert := model.Certificate{
 			ReportId: data.ID,
 		}
 
-		cond, err := cert.GetFilterReportId()
-		if err != nil {
-			log.Printf("WARN: skipping GetFilterEmail")
-			continue
-		}
-
-		dbRes, err := db.Query(cond, "reportId", c.AWS.DynamoTableName)
+		dbRes, err := db.Query(cert.GetFilterReportId(), "reportId", c.AWS.DynamoTableName)
 		if err != nil {
 			log.Printf("WARN: query error - %+v\n", err)
 		}
