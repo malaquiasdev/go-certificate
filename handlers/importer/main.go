@@ -17,11 +17,13 @@ import (
 
 func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	c := config.LoadConfig(false)
+
 	queue, err := queue.NewClient(c.AWS)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect with SQS", err)
 		return err
 	}
+
 	db, err := db.NewClient(c.AWS)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect with DynamoDB", err)
@@ -46,32 +48,25 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 	for _, data := range reports.Data {
 		blocked := strings.Contains(c.Curseduca.BlockList, fmt.Sprint(data.Content.ID))
 		if blocked {
-			log.Printf("WARN: skipping training course blocked - %+v\n", data)
+			log.Printf("WARN: skipping training course blocked | ContentID - %+v\n", data.Content.ID)
 			continue
 		}
 
 		if data.FinishedAt == nil {
-			log.Printf("WARN: skipping report FinishedAt not found - %+v\n", data)
+			log.Printf("WARN: skipping report FinishedAt not found | ReportId - %+v\n", data.ID)
 			continue
 		}
-
-		log.Printf("INFO: report data - %+v\n", data)
 
 		cert := model.Certificate{
 			ReportId: data.ID,
 		}
 
-		dbRes, err := db.Query(cert.GetFilterReportId(), "reportId", c.AWS.DynamoTableName)
-		if err != nil {
-			log.Printf("WARN: query error - %+v\n", err)
-		}
+		dbRes, _ := db.Query(cert.GetFilterReportId(), "reportId", c.AWS.DynamoTableName)
 
 		if len(dbRes.Items) != 0 {
-			log.Printf("WARN: skipping certificate found - %+v\n", dbRes.Items)
+			log.Printf("WARN: skipping certificate found | ReportId - %+v\n", data.ID)
 			continue
 		}
-
-		log.Printf("WARN: skipping certificate not found - %+v\n", dbRes.Items)
 
 		jsonData, err := json.Marshal(data)
 		if err != nil {
