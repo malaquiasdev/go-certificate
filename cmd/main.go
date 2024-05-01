@@ -9,7 +9,7 @@ import (
 
 func main() {
 	c := config.LoadConfig(true)
-	sess := config.CreateAWSSession(c.AWS)
+	sess, _ := config.CreateAWSSession(c.AWS)
 	db := db.Init(sess)
 
 	cert := models.Certificate{

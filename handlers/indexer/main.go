@@ -15,7 +15,7 @@ func handlerIndexer(ev events.SQSEvent) error {
 	cert := models.Certificate{}
 
 	c := config.LoadConfig(false)
-	sess := config.CreateAWSSession(c.AWS)
+	sess, _ := config.CreateAWSSession(c.AWS)
 	db := db.Init(sess)
 
 	err := json.Unmarshal([]byte(ev.Records[0].Body), &cert)

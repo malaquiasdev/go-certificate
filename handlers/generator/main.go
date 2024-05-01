@@ -5,7 +5,7 @@ import (
 	"ekoa-certificate-generator/internal/bucket"
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/db/models"
-	"ekoa-certificate-generator/internal/imagedraw"
+	imgDraw "ekoa-certificate-generator/internal/image_draw"
 	"ekoa-certificate-generator/internal/queue"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
@@ -96,45 +96,69 @@ func handlerGenerator(ev events.SQSEvent) error {
 		return err
 	}
 
-	imgDraw := imagedraw.DrawAndEconde(coverImg, []imagedraw.Field{{
+	img, err := imgDraw.Png(coverImg, []imgDraw.DrawParams{{
 		Key: "FULL_NAME",
-		Text: imagedraw.FieldText{
-			FontSize:  50.0,
-			PositionX: 610,
-			PositionY: 430,
-			FontBytes: fontSans,
-			Value:     report.Member.Name,
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 610,
+				Y: 430,
+			},
+			Font: imgDraw.Font{
+				Size: 50.0,
+				File: fontSans,
+			},
+			Value: report.Member.Name,
 		},
 	}, {
 		Key: "FINISH_AT",
-		Text: imagedraw.FieldText{
-			FontSize:  35.0,
-			PositionX: 1350,
-			PositionY: 665,
-			FontBytes: fontMont,
-			Value:     formattedFinishedAt,
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 1350,
+				Y: 665,
+			},
+			Font: imgDraw.Font{
+				Size: 35.0,
+				File: fontMont,
+			},
+			Value: formattedFinishedAt,
 		},
 	}, {
 		Key: "SIGNATURE",
-		Text: imagedraw.FieldText{
-			FontSize:  70.0,
-			PositionX: 1300,
-			PositionY: 830,
-			FontBytes: fontSign,
-			Value:     strings.ToLower(report.Member.Name),
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 1300,
+				Y: 830,
+			},
+			Font: imgDraw.Font{
+				Size: 70.0,
+				File: fontSign,
+			},
+			Value: strings.ToLower(report.Member.Name),
 		},
 	}, {
 		Key: "AUTHENTITCATION_KEY",
-		Text: imagedraw.FieldText{
-			FontSize:  20.0,
-			PositionX: 500,
-			PositionY: 1030,
-			FontBytes: fontMont,
-			Value:     cert.PublicUrl,
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 500,
+				Y: 1030,
+			},
+			Font: imgDraw.Font{
+				Size: 20.0,
+				File: fontMont,
+			},
+			Value: cert.PublicUrl,
 		},
 	}})
+	if err != nil {
+		log.Fatal("ERROR: failed to draw image", err)
+		return err
+	}
 
-	pdf := imagedraw.ImageToPdf(imgDraw, backCoverImg)
+	pdf, err := imgDraw.ToPdf(img, backCoverImg)
+	if err != nil {
+		log.Fatal("ERROR: failed to convert image to PDF", err)
+		return err
+	}
 
 	b.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName)
 
