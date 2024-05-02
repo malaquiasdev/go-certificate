@@ -3,7 +3,7 @@ package main
 import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/db"
-	"ekoa-certificate-generator/internal/db/models"
+	models "ekoa-certificate-generator/internal/db/model"
 	"encoding/json"
 	"log"
 
@@ -15,10 +15,13 @@ func handlerIndexer(ev events.SQSEvent) error {
 	cert := models.Certificate{}
 
 	c := config.LoadConfig(false)
-	sess := config.CreateAWSSession(c.AWS)
-	db := db.Init(sess)
+	db, err := db.NewClient(c.AWS)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with DynamoDB", err)
+		return err
+	}
 
-	err := json.Unmarshal([]byte(ev.Records[0].Body), &cert)
+	err = json.Unmarshal([]byte(ev.Records[0].Body), &cert)
 	if err != nil {
 		log.Fatal(err)
 		panic(err)

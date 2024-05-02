@@ -1,10 +1,9 @@
-package models
+package model
 
 import (
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"errors"
-	"log"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -44,7 +43,6 @@ func InterfaceToModel(data interface{}) (instance *Certificate, err error) {
 func (c *Certificate) ToString() (string, error) {
 	jsonData, err := json.Marshal(c)
 	if err != nil {
-		log.Fatal("ERROR: parse certificate to string", err)
 		return "", err
 	}
 
@@ -138,26 +136,16 @@ func (c *Certificate) GetFilterPK() map[string]interface{} {
 	return map[string]interface{}{"PK": c.PK}
 }
 
-func (c *Certificate) GetFilterReportId() (condition expression.Expression, err error) {
+func (c *Certificate) GetFilterReportId() expression.Expression {
 	keyCond := expression.Key("reportId").Equal(expression.Value(c.ReportId))
-	condition, err = expression.NewBuilder().WithKeyCondition(keyCond).Build()
-
-	if err != nil {
-		return condition, err
-	}
-
-	return condition, nil
+	condition, _ := expression.NewBuilder().WithKeyCondition(keyCond).Build()
+	return condition
 }
 
-func (c *Certificate) GetFilterEmail() (condition expression.Expression, err error) {
+func (c *Certificate) GetFilterEmail() expression.Expression {
 	keyCond := expression.Key("studentEmail").Equal(expression.Value(c.StudentEmail))
-	condition, err = expression.NewBuilder().WithKeyCondition(keyCond).Build()
-
-	if err != nil {
-		return condition, err
-	}
-
-	return condition, nil
+	condition, _ := expression.NewBuilder().WithKeyCondition(keyCond).Build()
+	return condition
 }
 
 func (c *Certificate) Bytes() ([]byte, error) {
