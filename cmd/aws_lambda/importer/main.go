@@ -36,7 +36,8 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		return err
 	}
 
-	res, err := cur.GetReportEnrollment(10000000000000000)
+	bilionLimit := 10000000000000000
+	res, err := cur.GetReportEnrollment(bilionLimit)
 	if err != nil {
 		log.Fatal("ERROR: failed to find report enrollment", err)
 		return err
