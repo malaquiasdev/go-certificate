@@ -18,7 +18,7 @@ import (
 )
 
 func handlerGenerator(ev events.SQSEvent) error {
-	report := curseduca.Course{}
+	report := curseduca.Report{}
 
 	c := config.LoadConfig(false)
 	queue, err := queue.NewClient(c.AWS)

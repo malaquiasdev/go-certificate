@@ -2,34 +2,23 @@ package main
 
 import (
 	"ekoa-certificate-generator/config"
-	"ekoa-certificate-generator/internal/db"
-	"ekoa-certificate-generator/internal/db/models"
+	"ekoa-certificate-generator/internal/curseduca"
 	"log"
 )
 
 func main() {
 	c := config.LoadConfig(true)
-	sess, _ := config.CreateAWSSession(c.AWS)
-	db := db.Init(sess)
 
-	cert := models.Certificate{
-		StudentEmail: "",
-	}
-
-	cond, err := cert.GetFilterEmail()
+	cur, err := curseduca.NewClient(c.Curseduca)
 	if err != nil {
-		log.Printf("WARN: skipping GetFilterEmail")
+		log.Fatal("ERROR: failed to connect with curseduca", err)
 	}
 
-	log.Printf("INFO: key -", cond)
-	dbRes, err := db.Query(cond, "studentEmail", c.AWS.DynamoTableName)
+	res, err := cur.GetReportEnrollment(10)
 	if err != nil {
-		log.Printf("WARN: query error - %+v\n", err)
+		log.Fatal("ERROR: failed to GET reports", err)
 	}
 
-	if len(dbRes.Items) != 0 {
-		log.Printf("WARN: skipping certificate found - %+v\n", dbRes.Items)
-	}
+	log.Printf("INFO: res - %+v\n", res)
 
-	log.Printf("WARN: skipping certificate not found - %+v\n", dbRes.Items)
 }
