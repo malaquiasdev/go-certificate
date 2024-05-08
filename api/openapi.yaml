@@ -1,0 +1,150 @@
+openapi: 3.0.3
+info:
+  title: Certificate Generator API
+  description: |-
+  version: 1.0.0
+externalDocs:
+  description: Github
+  url: https://github.com/malaquiasdev/certificate-generator
+servers:
+  - url: https://certificate.com.br/api
+tags:
+  - name: certificate
+    description: Everything about certificates
+paths:
+  /certificates:
+    get:
+      tags:
+        - certificate
+      summary: Find all certificates
+      description: Returns an array of certificate
+      operationId: getCertificates
+      parameters:
+        - name: email
+          in: query
+          description: student email
+          required: false
+          schema:
+            type: string
+            format: example@test.com
+        - name: nextPageKey
+          in: query
+          description: Pagination key
+          required: false
+          schema:
+            type: string
+            format: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificates'
+        '400':
+          description: Invalid ID
+        '404':
+          description: Not found
+      security:
+        - api_key: []
+  /certificates/{id}:
+    get:
+      tags:
+        - certificate
+      summary: Find a certificate by ID
+      description: Returns a single certificate
+      operationId: getCertificateById
+      parameters:
+        - name: id
+          in: path
+          description: ID of certificate to return
+          required: true
+          schema:
+            type: string
+            format: UUID
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Certificate'
+        '400':
+          description: Invalid ID
+        '404':
+          description: Not found
+      security:
+        - api_key: []
+  /certificates/{id}/file:
+    get:
+      tags:
+        - certificate
+      summary: Find a certificate file by ID
+      description: Returns a single file byte of a certificate
+      operationId: getCertificateFileById
+      parameters:
+        - name: id
+          in: path
+          description: ID of certificate to return
+          required: true
+          schema:
+            type: string
+            format: UUID
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/pdf:
+              schema:
+                $ref: '#/components/schemas/CertificateFile'
+        '400':
+          description: Invalid ID
+        '404':
+          description: Not found
+      security:
+        - api_key: []
+components:
+  schemas:
+    Certificates: 
+      required:
+      - nextPageKey
+      - items
+      type: object
+      properties:
+       nextPageKey:
+        type: string
+        description: If is empty, then the last page of results has been processed and there is no more data to be retrieved.
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+       items:
+        type: array
+        items:
+           $ref: '#/components/schemas/Certificate'
+    Certificate:
+      required:
+       - id
+       - contentId
+       - studentId
+       - url
+      type: object
+      properties:
+       id:
+        type: string
+        example: 1736e21a-3de6-486b-9915-151e74a2dec0
+       contentId:
+        type: integer
+        example: 10
+       studentId:
+        type: integer
+        example: 114234
+       url:
+        type: string
+        example: https://certificate.com.br/f/1736e21a-3de6-486b-9915-151e74a2dec0.pdf
+    CertificateFile: 
+     type: string
+     format: byte
+     description: Base64-encoded contents of the cerficate pdf file
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
