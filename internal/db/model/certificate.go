@@ -71,12 +71,12 @@ func (c *Certificate) GetMap() map[string]interface{} {
 	}
 }
 
-func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (c Certificate, err error) {
+func ParseDynamoToCertificate(response map[string]*dynamodb.AttributeValue) (c Certificate, err error) {
 	if len(response) == 0 {
 		return c, errors.New("item not found")
 	}
 	for key, value := range response {
-		if key == "id" {
+		if key == "PK" {
 			c.PK = *value.S
 		}
 		if key == "reportId" {
@@ -108,9 +108,6 @@ func ParseDynamoAtributeToStruct(response map[string]*dynamodb.AttributeValue) (
 		}
 		if key == "studentGroupIds" {
 			c.StudentGroupIds = *value.S
-		}
-		if key == "expiresAt" {
-			c.ExpiresAt = *value.S
 		}
 		if key == "expirationEnabled" {
 			c.ExpirationEnabled = *value.BOOL
@@ -145,6 +142,12 @@ func (c *Certificate) GetFilterReportId() expression.Expression {
 func (c *Certificate) GetFilterEmail() expression.Expression {
 	keyCond := expression.Key("studentEmail").Equal(expression.Value(c.StudentEmail))
 	condition, _ := expression.NewBuilder().WithKeyCondition(keyCond).Build()
+	return condition
+}
+
+func GetFilterPublicUrlNotNull() expression.Expression {
+	filter := expression.Name("publicUrl").NotEqual(expression.Value(""))
+	condition, _ := expression.NewBuilder().WithFilter(filter).Build()
 	return condition
 }
 
