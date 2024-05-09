@@ -38,7 +38,7 @@ module "lambda_importer" {
     CLASS_CURSEDUCA_BASE_URL = var.class_cursoeduca_base_url
     AWS_GENERATOR_QUEUE_URL  = module.sqs_generator.url
     AWS_DYNAMO_TABLE_NAME    = var.ddb_name
-    CURSEDUCA_BLOCK_LIST = var.cursoeduca_block_list
+    CURSEDUCA_BLOCK_LIST     = var.cursoeduca_block_list
   }
 }
 
@@ -55,8 +55,8 @@ module "lambda_generator" {
   log_retention    = var.lambda_days_log_retention
   depends_on       = [module.sqs_generator, module.sqs_indexer]
   environment = {
-    AWS_BUCKET_NAME       = var.aws_bucket_name
-    AWS_INDEXER_QUEUE_URL = module.sqs_indexer.url
+    AWS_BUCKET_NAME        = var.aws_bucket_name
+    AWS_INDEXER_QUEUE_URL  = module.sqs_indexer.url
     CERTIFICATE_URL_PREFIX = var.certificate_url_prefix
   }
 }
@@ -66,13 +66,29 @@ module "lambda_indexer" {
   name             = "${var.project_name}-indexer"
   handler_path     = "bootstrap"
   runtime          = "provided.al2023"
-  role_arn         = aws_iam_role.lambda_generator_role.arn
+  role_arn         = aws_iam_role.lambda_indexer_role.arn
   filename         = var.indexer_source_code
   source_code_hash = base64sha256(var.indexer_source_code)
   timeout          = var.lambda_indexer_timeout
   memory_size      = 1024
   log_retention    = var.lambda_days_log_retention
   depends_on       = [module.sqs_indexer]
+  environment = {
+    AWS_DYNAMO_TABLE_NAME = var.ddb_name
+  }
+}
+
+module "lambda_apigateway" {
+  source           = "./modules/lambda"
+  name             = "${var.project_name}-apigateway"
+  handler_path     = "bootstrap"
+  runtime          = "provided.al2023"
+  role_arn         = aws_iam_role.lambda_api_role.arn
+  filename         = var.apigateway_source_code
+  source_code_hash = base64sha256(var.apigateway_source_code)
+  timeout          = 30
+  memory_size      = 1024
+  log_retention    = var.lambda_days_log_retention
   environment = {
     AWS_DYNAMO_TABLE_NAME = var.ddb_name
   }

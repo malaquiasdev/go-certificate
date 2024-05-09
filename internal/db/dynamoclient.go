@@ -2,6 +2,8 @@ package db
 
 import (
 	"ekoa-certificate-generator/config"
+	"encoding/base64"
+	"encoding/json"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -15,11 +17,13 @@ type DynamoDB struct {
 }
 
 type IDynamoDB interface {
-	ScanAll(condition expression.Expression, tableName string) (response *dynamodb.ScanOutput, err error)
+	ScanAll(condition expression.Expression, lastEvaluatedKey string, tableName string) (response *dynamodb.ScanOutput, err error)
 	GetOne(condition map[string]interface{}, tableName string) (response *dynamodb.GetItemOutput, err error)
 	Query(condition expression.Expression, indexName string, tableName string) (response *dynamodb.QueryOutput, err error)
 	CreateOrUpdate(entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error)
 	Delete(condition map[string]interface{}, tableName string) (response *dynamodb.DeleteItemOutput, err error)
+	ToString(input map[string]*dynamodb.AttributeValue) (string, error)
+	ToAttributeValue(input string) (map[string]*dynamodb.AttributeValue, error)
 }
 
 func NewClient(c config.AWS) (IDynamoDB, error) {
@@ -35,13 +39,21 @@ func NewClient(c config.AWS) (IDynamoDB, error) {
 	}, nil
 }
 
-func (db *DynamoDB) ScanAll(condition expression.Expression, tableName string) (response *dynamodb.ScanOutput, err error) {
+func (db *DynamoDB) ScanAll(condition expression.Expression, lastEvaluatedKey string, tableName string) (response *dynamodb.ScanOutput, err error) {
 	input := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  condition.Names(),
 		ExpressionAttributeValues: condition.Values(),
 		FilterExpression:          condition.Filter(),
 		ProjectionExpression:      condition.Projection(),
 		TableName:                 aws.String(tableName),
+	}
+
+	if len(lastEvaluatedKey) > 0 {
+		key, err := db.ToAttributeValue(lastEvaluatedKey)
+		if err != nil {
+			return nil, err
+		}
+		input.ExclusiveStartKey = key
 	}
 
 	return db.connection.Scan(input)
@@ -95,4 +107,32 @@ func (db *DynamoDB) Delete(condition map[string]interface{}, tableName string) (
 		TableName: aws.String(tableName),
 	}
 	return db.connection.DeleteItem(input)
+}
+
+func (db *DynamoDB) ToString(input map[string]*dynamodb.AttributeValue) (string, error) {
+	var inputMap map[string]interface{}
+	err := dynamodbattribute.UnmarshalMap(input, &inputMap)
+	if err != nil {
+		return "", err
+	}
+	bytesJSON, err := json.Marshal(inputMap)
+	if err != nil {
+		return "", err
+	}
+	output := base64.StdEncoding.EncodeToString(bytesJSON)
+	return output, nil
+}
+
+func (db *DynamoDB) ToAttributeValue(input string) (map[string]*dynamodb.AttributeValue, error) {
+	bytesJSON, err := base64.StdEncoding.DecodeString(input)
+	if err != nil {
+		return nil, err
+	}
+	outputJSON := map[string]interface{}{}
+	err = json.Unmarshal(bytesJSON, &outputJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	return dynamodbattribute.MarshalMap(outputJSON)
 }

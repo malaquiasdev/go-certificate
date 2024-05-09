@@ -108,6 +108,7 @@ components:
     Certificates: 
       required:
       - nextPageKey
+      - count
       - items
       type: object
       properties:
@@ -115,6 +116,10 @@ components:
         type: string
         description: If is empty, then the last page of results has been processed and there is no more data to be retrieved.
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+       count:
+        type: integer
+        description: total of items.
+        example: 1000
        items:
         type: array
         items:
