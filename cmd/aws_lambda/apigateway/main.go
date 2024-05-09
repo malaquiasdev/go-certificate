@@ -4,6 +4,7 @@ import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/db"
 	"ekoa-certificate-generator/internal/db/model"
+	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,6 +16,7 @@ import (
 )
 
 func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	fmt.Println(req.MultiValueQueryStringParameters)
 	c := config.LoadConfig(false)
 	db, err := db.NewClient(c.AWS)
 	if err != nil {
@@ -40,15 +42,19 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 	certificates := CertificatesDTO{
 		Count: dbRes.Count,
 	}
-	
+
 	if len(dbRes.Items) > 0 {
 		certificates.NextPageKey, _ = db.ToString(dbRes.LastEvaluatedKey)
 		for _, dbItem := range dbRes.Items {
 			cert, _ := model.ParseDynamoToCertificate(dbItem)
+			var test string
+			test = cert.CreatedAt
+			createdAtFormatted, _ := utils.FormatDateTimeToDateOnly(&test)
 			certificates.Items = append(certificates.Items, CertificateDTO{
 				ID:        cert.PK,
 				ContentId: cert.ContentId,
 				StudentId: cert.StudentId,
+				CreatedAt: createdAtFormatted,
 				URL:       cert.PublicUrl,
 			})
 
