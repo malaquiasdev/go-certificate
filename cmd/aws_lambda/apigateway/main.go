@@ -16,7 +16,8 @@ import (
 )
 
 func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Println(req.MultiValueQueryStringParameters)
+	fmt.Println(req.MultiValueQueryStringParameters["nextPageKey"])
+	fmt.Println(req.MultiValueQueryStringParameters["email"])
 	c := config.LoadConfig(false)
 	db, err := db.NewClient(c.AWS)
 	if err != nil {
@@ -29,6 +30,8 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 
 	filter := expression.Name("publicUrl").NotEqual(expression.Value(""))
 	condition, err := expression.NewBuilder().WithFilter(filter).Build()
+
+	// .LastEvaluatedKey := req.MultiValueQueryStringParameters["nextPageKey"]
 
 	dbRes, err := db.ScanAll(condition, "", c.AWS.DynamoTableName)
 	if err != nil {
@@ -47,15 +50,20 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 		certificates.NextPageKey, _ = db.ToString(dbRes.LastEvaluatedKey)
 		for _, dbItem := range dbRes.Items {
 			cert, _ := model.ParseDynamoToCertificate(dbItem)
-			var test string
-			test = cert.CreatedAt
-			createdAtFormatted, _ := utils.FormatDateTimeToDateOnly(&test)
+			createdAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.CreatedAt)
+			finishedAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.CourseFinishedAt)
+			expiresAtFormatted, err := utils.FormatDateTimeToDateOnly(&cert.ExpiresAt)
+			if err != nil {
+				log.Fatal(err)
+			}
 			certificates.Items = append(certificates.Items, CertificateDTO{
-				ID:        cert.PK,
-				ContentId: cert.ContentId,
-				StudentId: cert.StudentId,
-				CreatedAt: createdAtFormatted,
-				URL:       cert.PublicUrl,
+				ID:         cert.PK,
+				ContentId:  cert.ContentId,
+				StudentId:  cert.StudentId,
+				CreatedAt:  createdAtFormatted,
+				FinishedAt: finishedAtFormatted,
+				ExpiresAt:  expiresAtFormatted,
+				URL:        cert.PublicUrl,
 			})
 
 		}

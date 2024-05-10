@@ -12,6 +12,5 @@ func FormatDateTimeToDateOnly(fullDateTime *string) (string, error) {
 }
 
 func GetDateTimeNowFormatted() string {
-	brazlianPattern := "02/01/2006 03:04:05"
-	return time.Now().Format(brazlianPattern)
+	return time.Now().Format(time.RFC3339Nano)
 }

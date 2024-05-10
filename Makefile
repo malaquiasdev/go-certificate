@@ -2,6 +2,9 @@ export CGO_ENABLED=0
 export GOOS=linux
 export GOARCH=amd64
 
+fmt:
+	- go fmt ./...
+
 build-importer:
 	- cd cmd/aws_lambda/importer && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../../bin/bootstrap *.go
 	- chmod +x bin/bootstrap
@@ -26,6 +29,7 @@ deploy:
 	- make build-generator
 	- make build-importer
 	- make build-indexer
+	- make build-api
 	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve
 
 deploy-fast:
