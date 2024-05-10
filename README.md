@@ -1,4 +1,4 @@
-# ekoa-certificate-generator
+# Go Certificate
 
 ![Layered Architecture](https://github.com/malaquiasdev/ekoa-certificate-generator/blob/main/doc/dynamodb/architecture/ekoa-certificate-generator.drawio.png?raw=true)
 
