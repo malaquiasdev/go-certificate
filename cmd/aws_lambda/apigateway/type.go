@@ -1,9 +1,8 @@
 package main
 
 type CertificatesDTO struct {
-	NextPageKey string           `json:"nextPageKey"`
-	Count       *int64           `json:"count"`
-	Items       []CertificateDTO `json:"items"`
+	Count int              `json:"count"`
+	Items []CertificateDTO `json:"items"`
 }
 
 type CertificateDTO struct {

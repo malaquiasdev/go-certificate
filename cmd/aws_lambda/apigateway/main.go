@@ -6,7 +6,6 @@ import (
 	"ekoa-certificate-generator/internal/db/model"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -16,8 +15,6 @@ import (
 )
 
 func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	fmt.Println(req.MultiValueQueryStringParameters["nextPageKey"])
-	fmt.Println(req.MultiValueQueryStringParameters["email"])
 	c := config.LoadConfig(false)
 	db, err := db.NewClient(c.AWS)
 	if err != nil {
@@ -29,11 +26,13 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 	}
 
 	filter := expression.Name("publicUrl").NotEqual(expression.Value(""))
+	if value, exist := req.MultiValueQueryStringParameters["studentEmail"]; exist {
+		filter.And(expression.Name("email").Equal(expression.Value(value[0])))
+	}
+
 	condition, err := expression.NewBuilder().WithFilter(filter).Build()
 
-	// .LastEvaluatedKey := req.MultiValueQueryStringParameters["nextPageKey"]
-
-	dbRes, err := db.ScanAll(condition, "", c.AWS.DynamoTableName)
+	dbRes, err := db.ScanAll(condition, c.AWS.DynamoTableName)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect ScanAll DynamoDB", err)
 		return events.APIGatewayProxyResponse{
@@ -43,11 +42,10 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 	}
 
 	certificates := CertificatesDTO{
-		Count: dbRes.Count,
+		Count: len(dbRes.Items),
 	}
 
 	if len(dbRes.Items) > 0 {
-		certificates.NextPageKey, _ = db.ToString(dbRes.LastEvaluatedKey)
 		for _, dbItem := range dbRes.Items {
 			cert, _ := model.ParseDynamoToCertificate(dbItem)
 			createdAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.CreatedAt)
@@ -71,7 +69,7 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 
 	res, err := json.Marshal(certificates)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal("ERROR: failed to parse certificates", err)
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusInternalServerError,
 			Body:       http.StatusText(http.StatusInternalServerError),
