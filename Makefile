@@ -21,7 +21,7 @@ build-indexer:
 	- cd bin/ && zip -j indexer_lambda.zip bootstrap
 
 build-api:
-	- cd cmd/aws_lambda/apigateway && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../../bin/bootstrap *.go
+	- cd cmd/aws_lambda/apigateway && go build -tags lambda.norpc -o ../../../bin/bootstrap *.go
 	- chmod +x bin/bootstrap
 	- cd bin/ && zip -j apigateway_lambda.zip bootstrap
 
