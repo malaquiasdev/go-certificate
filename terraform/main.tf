@@ -78,14 +78,14 @@ module "lambda_indexer" {
   }
 }
 
-module "lambda_apigateway" {
+module "lambda_api_get_certificates" {
   source           = "./modules/lambda"
-  name             = "${var.project_name}-apigateway"
+  name             = "${var.project_name}-api-get-certificates"
   handler_path     = "bootstrap"
   runtime          = "provided.al2023"
   role_arn         = aws_iam_role.lambda_api_role.arn
-  filename         = var.apigateway_source_code
-  source_code_hash = base64sha256(var.apigateway_source_code)
+  filename         = var.api_get_certificates_source_code
+  source_code_hash = base64sha256(var.api_get_certificates_source_code)
   timeout          = 30
   memory_size      = 1024
   log_retention    = var.lambda_days_log_retention
