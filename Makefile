@@ -25,6 +25,11 @@ build-api-get-certificates:
 	- chmod +x bin/bootstrap
 	- cd bin/ && zip -j api_get_certificates_lambda.zip bootstrap
 
+build-api-get-certificate-file:
+	- cd cmd/aws_lambda/apigateway/get_certificate_file && go build -tags lambda.norpc -o ../../../../bin/bootstrap *.go
+	- chmod +x bin/bootstrap
+	- cd bin/ && zip -j api_get_certificate_file_lambda.zip bootstrap
+
 deploy:
 	- make build-generator
 	- make build-importer

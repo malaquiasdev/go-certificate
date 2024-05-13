@@ -94,6 +94,23 @@ module "lambda_api_get_certificates" {
   }
 }
 
+module "lambda_api_get_certificate_file" {
+  source           = "./modules/lambda"
+  name             = "${var.project_name}-api-get-certificate-file"
+  handler_path     = "bootstrap"
+  runtime          = "provided.al2023"
+  role_arn         = aws_iam_role.lambda_api_role.arn
+  filename         = var.api_get_certificate_file_source_code
+  source_code_hash = base64sha256(var.api_get_certificate_file_source_code)
+  timeout          = 30
+  memory_size      = 1024
+  log_retention    = var.lambda_days_log_retention
+  environment = {
+    AWS_DYNAMO_TABLE_NAME = var.ddb_name
+  }
+}
+
+
 resource "aws_lambda_event_source_mapping" "lambda_generator_event" {
   depends_on       = [module.sqs_generator, module.lambda_generator]
   event_source_arn = module.sqs_generator.arn
