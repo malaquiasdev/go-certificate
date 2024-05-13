@@ -28,15 +28,10 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 
 	filter := expression.Name("publicUrl").NotEqual(expression.Value(""))
 	if value, exist := req.MultiValueQueryStringParameters["email"]; exist {
-		log.Println(value[0])
 		filter.And(expression.Name("studentEmail").Equal(expression.Value(value[0])))
 	}
 
 	condition, err := expression.NewBuilder().WithFilter(filter).Build()
-
-	log.Printf("INFO: names - %+v\n", condition.Names())
-	log.Printf("INFO: values - %+v\n", condition.Values())
-	log.Printf("INFO: Filter - %+v\n", condition.Filter())
 
 	dbRes, err := db.ScanAll(condition, c.AWS.DynamoTableName)
 	if err != nil {
