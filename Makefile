@@ -2,6 +2,9 @@ export CGO_ENABLED=0
 export GOOS=linux
 export GOARCH=amd64
 
+fmt:
+	- go fmt ./...
+
 build-importer:
 	- cd cmd/aws_lambda/importer && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../../bin/bootstrap *.go
 	- chmod +x bin/bootstrap
@@ -18,7 +21,7 @@ build-indexer:
 	- cd bin/ && zip -j indexer_lambda.zip bootstrap
 
 build-api:
-	- cd cmd/aws_lambda/apigateway && go build -a -installsuffix cgo -ldflags '-s -w -extldflags "-static"' -o ../../../bin/bootstrap *.go
+	- cd cmd/aws_lambda/apigateway && go build -tags lambda.norpc -o ../../../bin/bootstrap *.go
 	- chmod +x bin/bootstrap
 	- cd bin/ && zip -j apigateway_lambda.zip bootstrap
 
@@ -26,6 +29,7 @@ deploy:
 	- make build-generator
 	- make build-importer
 	- make build-indexer
+	- make build-api
 	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve
 
 deploy-fast:

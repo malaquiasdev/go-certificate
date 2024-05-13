@@ -141,6 +141,9 @@ components:
        studentId:
         type: integer
         example: 114234
+       createdAt: 
+        type: string
+        example: 29/04/2024
        url:
         type: string
         example: https://certificate.com.br/f/1736e21a-3de6-486b-9915-151e74a2dec0.pdf

@@ -23,7 +23,7 @@ type Certificate struct {
 	StudentName       string `json:"studentName"`
 	StudentEmail      string `json:"studentEmail"`
 	StudentGroupIds   string `json:"studentGroupIds,omitempty"`
-	ExpiresAt         string `json:"expiresAt"`
+	ExpiresAt         string `json:"expiresAt,omitempty"`
 	ExpirationEnabled bool   `json:"expirationEnabled"`
 	CreatedAt         string `json:"createdAt"`
 	UpdatedAt         string `json:"updatedAt"`
@@ -71,7 +71,8 @@ func (c *Certificate) GetMap() map[string]interface{} {
 	}
 }
 
-func ParseDynamoToCertificate(response map[string]*dynamodb.AttributeValue) (c Certificate, err error) {
+func ParseDynamoToCertificate(response map[string]*dynamodb.AttributeValue) (Certificate, error) {
+	c := Certificate{}
 	if len(response) == 0 {
 		return c, errors.New("item not found")
 	}
@@ -108,6 +109,9 @@ func ParseDynamoToCertificate(response map[string]*dynamodb.AttributeValue) (c C
 		}
 		if key == "studentGroupIds" {
 			c.StudentGroupIds = *value.S
+		}
+		if key == "expiresAt" {
+			c.ExpiresAt = *value.S
 		}
 		if key == "expirationEnabled" {
 			c.ExpirationEnabled = *value.BOOL
@@ -173,5 +177,5 @@ func (c *Certificate) SetFilePath() {
 }
 
 func (c *Certificate) SetPublicUrl(urlPrefix string) {
-	c.PublicUrl = urlPrefix + "/f" + c.PK
+	c.PublicUrl = urlPrefix + "/f/" + c.PK
 }
