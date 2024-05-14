@@ -8,6 +8,7 @@ variable "importer_source_code" { type = string }
 variable "generator_source_code" { type = string }
 variable "indexer_source_code" { type = string }
 variable "api_get_certificates_source_code" { type = string }
+variable "api_get_certificate_file_source_code" { type = string }
 variable "prof_cursoeduca_username" { type = string }
 variable "prof_cursoeduca_password" { type = string }
 variable "prof_cursoeduca_base_url" { type = string }
