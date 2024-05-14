@@ -107,6 +107,7 @@ module "lambda_api_get_certificate_file" {
   log_retention    = var.lambda_days_log_retention
   environment = {
     AWS_DYNAMO_TABLE_NAME = var.ddb_name
+    AWS_BUCKET_NAME        = var.aws_bucket_name
   }
 }
 

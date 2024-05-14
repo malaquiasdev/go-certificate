@@ -30,12 +30,15 @@ resource "aws_iam_policy" "lambda_api_policy" {
             "Effect": "Allow",
             "Action": [
                 "logs:*",
-                "dynamodb:*"
+                "dynamodb:*",
+                "s3:GetObject"
             ],
             "Resource": [
                 "arn:aws:logs:*:*:*",
                 "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}",
-                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}/index/*"
+                "arn:aws:dynamodb:${var.aws_region}:${var.aws_account_number}:table/${var.ddb_name}/index/*",
+                "arn:aws:s3:::${var.aws_bucket_name}",
+                "arn:aws:s3:::${var.aws_bucket_name}/*"
             ]
         }
     ]
