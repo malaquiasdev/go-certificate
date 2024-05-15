@@ -55,7 +55,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 		StudentId:         report.Member.ID,
 		StudentName:       report.Member.Name,
 		StudentEmail:      report.Member.Email,
-		ExpiresAt:         *report.ExpiresAt,
+		ExpiresAt:         report.ExpiresAt,
 		ExpirationEnabled: report.ExpirationEnabled,
 	}
 	cert.GenerateID()
