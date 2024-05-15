@@ -51,7 +51,7 @@ type Report struct {
 	Member            EnrollmentsMember `json:"member"`
 	SituationID       int               `json:"situationId"`
 	Progress          int               `json:"progress"`
-	ExpiresAt         *string           `json:"expiresAt"`
+	ExpiresAt         string            `json:"expiresAt,omitempty"`
 	ExpirationEnabled bool              `json:"expirationEnabled"`
 	Integration       string            `json:"integration"`
 }

@@ -50,10 +50,10 @@ func handleGetCertificateFile(req events.APIGatewayProxyRequest) (events.APIGate
 
 	cert, err = model.ParseDynamoToCertificate(dbRes.Item)
 	if err != nil {
-		log.Fatal("ERROR: failed to parse db to model", err)
+		log.Fatal("ERROR: failed to parse db to model ", err)
 		return events.APIGatewayProxyResponse{
-			StatusCode: http.StatusInternalServerError,
-			Body:       http.StatusText(http.StatusInternalServerError),
+			StatusCode: http.StatusNotFound,
+			Body:       http.StatusText(http.StatusNotFound),
 		}, nil
 	}
 

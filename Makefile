@@ -35,6 +35,7 @@ deploy:
 	- make build-importer
 	- make build-indexer
 	- make build-api-get-certificates
+	- make build-api-get-certificat-file
 	- cd terraform && terraform apply -var-file='dev.tfvars' -auto-approve
 
 deploy-fast:
