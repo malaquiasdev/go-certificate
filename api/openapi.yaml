@@ -27,13 +27,6 @@ paths:
           schema:
             type: string
             format: example@test.com
-        - name: nextPageKey
-          in: query
-          description: Pagination key
-          required: false
-          schema:
-            type: string
-            format: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
       responses:
         '200':
           description: successful operation
@@ -107,7 +100,6 @@ components:
   schemas:
     Certificates: 
       required:
-      - nextPageKey
       - count
       - items
       type: object
@@ -129,6 +121,8 @@ components:
        - id
        - contentId
        - studentId
+       - createdAt
+       - finishedAt
        - url
       type: object
       properties:
@@ -144,9 +138,15 @@ components:
        createdAt: 
         type: string
         example: 29/04/2024
+       finishedAt: 
+        type: string
+        example: 29/04/2024
+       expiresAt: 
+        type: string
+        example: 29/04/2024
        url:
         type: string
-        example: https://certificate.com.br/f/1736e21a-3de6-486b-9915-151e74a2dec0.pdf
+        example: https://certificate.com.br/v1/certificates/1736e21a-3de6-486b-9915-151e74a2dec0/file
     CertificateFile: 
      type: string
      format: byte
