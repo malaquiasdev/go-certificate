@@ -51,10 +51,7 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 			cert, _ := model.ParseDynamoToCertificate(dbItem)
 			createdAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.CreatedAt)
 			finishedAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.CourseFinishedAt)
-			expiresAtFormatted, err := utils.FormatDateTimeToDateOnly(&cert.ExpiresAt)
-			if err != nil {
-				log.Fatal(err)
-			}
+			expiresAtFormatted, _ := utils.FormatDateTimeToDateOnly(&cert.ExpiresAt)
 			certificates.Items = append(certificates.Items, CertificateDTO{
 				ID:         cert.PK,
 				ContentId:  cert.ContentId,
