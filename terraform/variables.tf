@@ -27,5 +27,9 @@ variable "lambda_indexer_timeout" {
   type    = number
   default = 60
 }
-variable "cursoeduca_block_list" { type = string }
+variable "cursoeduca_block_list" { 
+  type = string 
+  default = “423,437,438,439,440,441,444,414,413,408,403,361,360,305,304,303,302,301,300,265,263,262,261,260,251,250,243,242,241,240,239,238,237,236,232,208,207,206,205,204,203,202,201,200,199,198,197,196,195,194,193,192,191,190,189,342,352,346,233,343”
+}
+}
 variable "certificate_url_prefix" { type = string }
