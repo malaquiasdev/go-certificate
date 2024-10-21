@@ -1,8 +1,9 @@
 package main
 
 type CertificatesDTO struct {
-	Count int              `json:"count"`
-	Items []CertificateDTO `json:"items"`
+	Count         int              `json:"count"`
+	Items         []CertificateDTO `json:"items"`
+	NextPageToken string           `json:"nextPageToken"`
 }
 
 type CertificateDTO struct {

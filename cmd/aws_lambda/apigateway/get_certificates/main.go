@@ -11,6 +11,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
@@ -33,7 +34,12 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 
 	condition, err := expression.NewBuilder().WithFilter(filter).Build()
 
-	dbRes, err := db.ScanAll(condition, c.AWS.DynamoTableName)
+	var lastEvaluatedKey map[string]*dynamodb.AttributeValue
+	if lek, exist := req.MultiValueQueryStringParameters["nextPageToken"]; exist {
+		lastEvaluatedKey, _ = db.ToAttributeValue(lek[0])
+	}
+
+	dbRes, err := db.ScanAll(condition, c.AWS.DynamoTableName, lastEvaluatedKey)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect ScanAll DynamoDB", err)
 		return events.APIGatewayProxyResponse{
@@ -63,6 +69,18 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 			})
 
 		}
+	}
+
+	if dbRes.LastEvaluatedKey != nil {
+		token, err := db.ToString(dbRes.LastEvaluatedKey)
+		if err != nil {
+			log.Fatal("ERROR: failed to stringfy LastEvaluatedKey", err)
+			return events.APIGatewayProxyResponse{
+				StatusCode: http.StatusInternalServerError,
+				Body:       http.StatusText(http.StatusInternalServerError),
+			}, nil
+		}
+		certificates.NextPageToken = token
 	}
 
 	res, err := json.Marshal(certificates)
