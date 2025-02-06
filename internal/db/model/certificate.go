@@ -1,14 +1,16 @@
 package model
 
 import (
+	"crypto/rand"
 	"ekoa-certificate-generator/internal/utils"
 	"encoding/json"
 	"errors"
+	"math/big"
 	"strconv"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
-	"github.com/google/uuid"
 )
 
 type Certificate struct {
@@ -160,8 +162,12 @@ func (c *Certificate) Bytes() ([]byte, error) {
 }
 
 func (c *Certificate) GenerateID() {
-	id := uuid.NewString()
-	c.PK = id
+	var builder strings.Builder
+	for i := 0; i < 32; i++ {
+		n, _ := rand.Int(rand.Reader, big.NewInt(10))
+		builder.WriteString(n.String())
+	}
+	c.PK = builder.String()
 }
 
 func (c *Certificate) SetCreatedAt() {

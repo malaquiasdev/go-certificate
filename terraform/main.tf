@@ -1,8 +1,11 @@
+
+/*
 module "dynamodb_certificates" {
   source     = "./modules/dynamodb"
   name       = var.ddb_name
   aws_region = var.aws_region
 }
+*/
 
 module "sqs_generator" {
   source                     = "./modules/sqs"
@@ -107,11 +110,11 @@ module "lambda_api_get_certificate_file" {
   log_retention    = var.lambda_days_log_retention
   environment = {
     AWS_DYNAMO_TABLE_NAME = var.ddb_name
-    AWS_BUCKET_NAME        = var.aws_bucket_name
+    AWS_BUCKET_NAME       = var.aws_bucket_name
   }
 }
 
-
+/*
 resource "aws_lambda_event_source_mapping" "lambda_generator_event" {
   depends_on       = [module.sqs_generator, module.lambda_generator]
   event_source_arn = module.sqs_generator.arn
@@ -127,3 +130,4 @@ resource "aws_lambda_event_source_mapping" "lambda_indexer_event" {
   enabled          = true
   batch_size       = 1
 }
+*/
