@@ -2,6 +2,7 @@ package curseduca
 
 type ICurseduca interface {
 	GetReportEnrollment(limit int) (ReportEnrollment, error)
+	GetMemberById(memberId int) (Member, error)
 }
 
 type Curseduca struct {
@@ -59,4 +60,13 @@ type Report struct {
 type ReportEnrollment struct {
 	Metadata Metadata `json:"metadata"`
 	Reports  []Report `json:"data"`
+}
+
+type Member struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	UUID     string `json:"uuid"`
+	Email    string `json:"email"`
+	Slug     string `json:"slug"`
+	Document string `json:"document"`
 }

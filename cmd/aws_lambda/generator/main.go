@@ -62,6 +62,18 @@ func handlerGenerator(ev events.SQSEvent) error {
 	cert.SetFilePath()
 	cert.SetPublicUrl(c.UrlPrefix)
 
+	cur, err := curseduca.NewClient(c.Curseduca)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with curseduca", err)
+		return err
+	}
+
+	member, err := cur.GetMemberById(cert.StudentId)
+	if err != nil {
+		log.Fatal("ERROR: failed to get member", err)
+		return err
+	}
+
 	coverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
 	backCoverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
 
@@ -134,6 +146,24 @@ func handlerGenerator(ev events.SQSEvent) error {
 				File: fontSign,
 			},
 			Value: strings.ToLower(utils.NormalizeString(report.Member.Name)),
+		},
+	}, {
+		Key: "DOCUMENT",
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 1370,
+				Y: 900,
+			},
+			Font: imgDraw.Font{
+				Size: 15.0,
+				File: fontSans,
+			},
+			Value: func() string {
+				if member.Document == "" {
+					return ""
+				}
+				return "CPF: " + member.Document
+			}(),
 		},
 	}, {
 		Key: "AUTHENTITCATION_KEY",
