@@ -42,6 +42,7 @@ type EnrollmentsMember struct {
 	Slug     string `json:"slug"`
 	Email    string `json:"email"`
 	GroupIds []int  `json:"groupIds"`
+	Document string `json:"document"`
 }
 
 type Report struct {
