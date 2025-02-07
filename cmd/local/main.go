@@ -34,7 +34,7 @@ func main() {
 		},
 		FinishedAt: finishedAt,
 		Member: curseduca.EnrollmentsMember{
-			ID:       3379,
+			ID:       6467,
 			Name:     "Égnaldo Aécio Neves",
 			Slug:     "egnaldo-aecio-001",
 			Email:    "001@test.com",
@@ -62,6 +62,18 @@ func main() {
 	cert.GenerateID()
 	cert.SetFilePath()
 	cert.SetPublicUrl("")
+
+	cur, err := curseduca.NewClient(c.Curseduca)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with curseduca", err)
+		return
+	}
+
+	member, err := cur.GetMemberById(cert.StudentId)
+	if err != nil {
+		log.Fatal("ERROR: failed to get member", err)
+		return
+	}
 
 	coverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
 	backCoverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
@@ -138,19 +150,38 @@ func main() {
 			Value: strings.ToLower(utils.NormalizeString(report.Member.Name)),
 		},
 	}, {
-		Key: "AUTHENTITCATION_KEY",
+		Key: "DOCUMENT",
 		Text: imgDraw.FieldText{
 			Position: imgDraw.Position{
-				X: 500,
-				Y: 1030,
+				X: 1370,
+				Y: 900,
 			},
 			Font: imgDraw.Font{
-				Size: 20.0,
-				File: fontMont,
+				Size: 15.0,
+				File: fontSans,
 			},
-			Value: cert.PublicUrl,
+			Value: func() string {
+				if member.Document == "" {
+					return ""
+				}
+				return "CPF: " + member.Document
+			}(),
 		},
-	}})
+	},
+		{
+			Key: "AUTHENTITCATION_KEY",
+			Text: imgDraw.FieldText{
+				Position: imgDraw.Position{
+					X: 500,
+					Y: 1030,
+				},
+				Font: imgDraw.Font{
+					Size: 20.0,
+					File: fontMont,
+				},
+				Value: cert.PublicUrl,
+			},
+		}})
 	if err != nil {
 		log.Fatal("ERROR: failed to draw image", err)
 		return
