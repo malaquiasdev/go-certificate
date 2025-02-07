@@ -6,44 +6,45 @@ import (
 	"ekoa-certificate-generator/internal/curseduca"
 	"ekoa-certificate-generator/internal/db/model"
 	imgDraw "ekoa-certificate-generator/internal/image_draw"
-	"ekoa-certificate-generator/internal/queue"
 	"ekoa-certificate-generator/internal/utils"
-	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
-
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 )
 
-func handlerGenerator(ev events.SQSEvent) error {
-	report := curseduca.Report{}
+func main() {
+	var finishedAt *string = new(string)
+	*finishedAt = "2023-09-17T15:36:10.000Z"
+	expiresAt := "2025-09-17T15:36:10.000Z"
 
-	c := config.LoadConfig(false)
-	queue, err := queue.NewClient(c.AWS)
-	if err != nil {
-		log.Fatal("ERROR: failed to connect with SQS", err)
-		return err
-	}
-
+	c := config.LoadConfig(true)
 	b, err := bucket.NewClient(c.AWS)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect with Bucket S3", err)
-		return err
+		return
 	}
 
-	err = json.Unmarshal([]byte(ev.Records[0].Body), &report)
-	if err != nil {
-		log.Fatal("ERROR: parse event body to report", err)
-		return err
-	}
-
-	log.Printf("INFO: report - %+v\n", report)
-
-	if report.FinishedAt == nil {
-		log.Printf("WARN: skipping report FinishedAt not found")
-		return nil
+	report := curseduca.Report{
+		ID: 11796,
+		Content: curseduca.Content{
+			ID:    999999999999999999,
+			Slug:  "gestao-de-tempo",
+			Title: "Gestão de Tempo",
+		},
+		FinishedAt: finishedAt,
+		Member: curseduca.EnrollmentsMember{
+			ID:       3379,
+			Name:     "Égnaldo Aécio Neves",
+			Slug:     "egnaldo-aecio-001",
+			Email:    "001@test.com",
+			GroupIds: []int{40},
+		},
+		SituationID:       1,
+		Progress:          100,
+		ExpiresAt:         expiresAt,
+		ExpirationEnabled: true,
+		Integration:       "Gratuito",
 	}
 
 	cert := model.Certificate{
@@ -60,7 +61,7 @@ func handlerGenerator(ev events.SQSEvent) error {
 	}
 	cert.GenerateID()
 	cert.SetFilePath()
-	cert.SetPublicUrl(c.UrlPrefix)
+	cert.SetPublicUrl("")
 
 	coverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_1.PNG")
 	backCoverPath := "pdf_templates/" + fmt.Sprintf("%d%s", report.Content.ID, "/page_2.PNG")
@@ -68,12 +69,13 @@ func handlerGenerator(ev events.SQSEvent) error {
 	coverImg, err := b.GetFileBytes(coverPath, c.AWS.BucketName)
 	if err != nil {
 		log.Fatal("ERROR: GET cover image", err)
-		return err
+		return
 	}
+
 	backCoverImg, err := b.GetFileBytes(backCoverPath, c.AWS.BucketName)
 	if err != nil {
 		log.Fatal("ERROR: GET back cover image", err)
-		return err
+		return
 	}
 
 	formattedFinishedAt, _ := utils.FormatDateTimeToDateOnly(report.FinishedAt)
@@ -81,19 +83,19 @@ func handlerGenerator(ev events.SQSEvent) error {
 	fontSans, err := b.GetFileBytes("pdf_templates/fonts/EncodeSansExpanded-Bold.ttf", c.AWS.BucketName)
 	if err != nil {
 		log.Fatal("ERROR: GET EncodeSansExpanded font", err)
-		return err
+		return
 	}
 
 	fontMont, err := b.GetFileBytes("pdf_templates/fonts/Montserrat-Regular.ttf", c.AWS.BucketName)
 	if err != nil {
 		log.Fatal("ERROR: GET Montserrat font", err)
-		return err
+		return
 	}
 
 	fontSign, err := b.GetFileBytes("pdf_templates/fonts/Thesignature.ttf", c.AWS.BucketName)
 	if err != nil {
 		log.Fatal("ERROR: GET Thesignature font", err)
-		return err
+		return
 	}
 
 	img, err := imgDraw.Png(coverImg, []imgDraw.DrawParams{{
@@ -151,28 +153,20 @@ func handlerGenerator(ev events.SQSEvent) error {
 	}})
 	if err != nil {
 		log.Fatal("ERROR: failed to draw image", err)
-		return err
+		return
 	}
 
 	pdf, err := imgDraw.ToPdf(img, backCoverImg)
 	if err != nil {
 		log.Fatal("ERROR: failed to convert image to PDF", err)
-		return err
+		return
 	}
 
-	b.SaveFile(pdf.Bytes(), cert.FilePath, c.AWS.BucketName)
-
-	certStr, err := cert.ToString()
+	fileName := fmt.Sprintf("certificate_%d.pdf", report.ID)
+	err = os.WriteFile(fileName, pdf.Bytes(), 0644)
 	if err != nil {
-		log.Fatal("ERROR: parse certificate to string", err)
-		return err
+		log.Fatal("ERROR: failed to save PDF locally", err)
+		return
 	}
-
-	queue.Send(certStr, c.AWS.IndexerQueueUrl)
-
-	return nil
-}
-
-func main() {
-	lambda.Start(handlerGenerator)
+	log.Printf("INFO: PDF saved successfully as %s", fileName)
 }
