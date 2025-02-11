@@ -136,6 +136,24 @@ func handlerGenerator(ev events.SQSEvent) error {
 			Value: strings.ToLower(utils.NormalizeString(report.Member.Name)),
 		},
 	}, {
+		Key: "DOCUMENT",
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 1370,
+				Y: 900,
+			},
+			Font: imgDraw.Font{
+				Size: 15.0,
+				File: fontSans,
+			},
+			Value: func() string {
+				if report.Member.Document == "" {
+					return ""
+				}
+				return "CPF: " + report.Member.Document
+			}(),
+		},
+	}, {
 		Key: "AUTHENTITCATION_KEY",
 		Text: imgDraw.FieldText{
 			Position: imgDraw.Position{
