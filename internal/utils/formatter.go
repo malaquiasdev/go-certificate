@@ -27,3 +27,19 @@ func NormalizeString(s string) string {
 	result, _, _ := transform.String(t, s)
 	return result
 }
+
+func CalculateExpirationDate(finishedAt *string, validadeEmDias *int) string {
+	if finishedAt == nil || validadeEmDias == nil {
+		return ""
+	}
+
+	dateTime, err := time.Parse(time.RFC3339, *finishedAt)
+	if err != nil {
+		return ""
+	}
+
+	normalizedDate := time.Date(dateTime.Year(), dateTime.Month(), dateTime.Day(), 0, 0, 0, 0, dateTime.Location())
+	expirationDate := normalizedDate.AddDate(0, 0, *validadeEmDias)
+
+	return expirationDate.Format("02/01/2006")
+}

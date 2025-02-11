@@ -21,9 +21,18 @@ type Curseduca struct {
 	BlockList    string
 }
 
+type Mysql struct {
+	Username string
+	Password string
+	Host     string
+	Port     string
+	Dbname   string
+}
+
 type Config struct {
 	AWS       AWS
 	Curseduca Curseduca
+	Mysql     Mysql
 	UrlPrefix string
 }
 
@@ -47,6 +56,13 @@ func LoadConfig(isLocal bool) Config {
 				ApiKey:       utils.GetEnvLocal("CURSEDUCA_API_KEY", ""),
 				BlockList:    utils.GetEnvLocal("CURSEDUCA_BLOCK_LIST", ""),
 			},
+			Mysql: Mysql{
+				Username: utils.GetEnvLocal("MYSQL_USERNAME", ""),
+				Host:     utils.GetEnvLocal("MYSQL_HOST", ""),
+				Password: utils.GetEnvLocal("MYSQL_PASSWORD", ""),
+				Port:     utils.GetEnvLocal("MYSQL_PORT", ""),
+				Dbname:   utils.GetEnvLocal("MYSQL_DATABASE", ""),
+			},
 			UrlPrefix: utils.GetEnvLocal("CERTIFICATE_URL_PREFIX", ""),
 		}
 	}
@@ -67,6 +83,13 @@ func LoadConfig(isLocal bool) Config {
 			Password:     utils.GetEnv("PROF_CURSEDUCA_PASSWORD", ""),
 			ApiKey:       utils.GetEnv("CURSEDUCA_API_KEY", ""),
 			BlockList:    utils.GetEnv("CURSEDUCA_BLOCK_LIST", ""),
+		},
+		Mysql: Mysql{
+			Username: utils.GetEnv("MYSQL_USERNAME", ""),
+			Host:     utils.GetEnv("MYSQL_HOST", ""),
+			Password: utils.GetEnv("MYSQL_PASSWORD", ""),
+			Port:     utils.GetEnv("MYSQL_PORT", ""),
+			Dbname:   utils.GetEnv("MYSQL_DATABASE", ""),
 		},
 		UrlPrefix: utils.GetEnv("CERTIFICATE_URL_PREFIX", ""),
 	}

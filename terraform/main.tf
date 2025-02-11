@@ -42,6 +42,11 @@ module "lambda_importer" {
     AWS_GENERATOR_QUEUE_URL  = module.sqs_generator.url
     AWS_DYNAMO_TABLE_NAME    = var.ddb_name
     CURSEDUCA_BLOCK_LIST     = var.cursoeduca_block_list
+    MYSQL_USERNAME           = var.mysql_username
+    MYSQL_PASSWORD           = var.mysql_password
+    MYSQL_HOST               = var.mysql_host
+    MYSQL_PORT               = var.mysql_port
+    MYSQL_DBNAME             = var.mysql_dbname
   }
 }
 
