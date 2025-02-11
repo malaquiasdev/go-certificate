@@ -4,6 +4,7 @@ import (
 	"ekoa-certificate-generator/config"
 	"ekoa-certificate-generator/internal/bucket"
 	"ekoa-certificate-generator/internal/curseduca"
+	"ekoa-certificate-generator/internal/db"
 	"ekoa-certificate-generator/internal/db/model"
 	imgDraw "ekoa-certificate-generator/internal/image_draw"
 	"ekoa-certificate-generator/internal/utils"
@@ -16,13 +17,42 @@ import (
 func main() {
 	var finishedAt *string = new(string)
 	*finishedAt = "2023-09-17T15:36:10.000Z"
-	expiresAt := "2025-09-17T15:36:10.000Z"
 
 	c := config.LoadConfig(true)
 	b, err := bucket.NewClient(c.AWS)
 	if err != nil {
 		log.Fatal("ERROR: failed to connect with Bucket S3", err)
 		return
+	}
+
+	db, err := db.NewMySQLClient(c.Mysql)
+	if err != nil {
+		log.Fatal("ERROR: failed to connect with MySQL", err)
+	}
+
+	rows, err := db.GetDB().Query(`
+		SELECT id, idsCurseduca, validadeEmDias
+		FROM railway.curso 
+		WHERE JSON_EXTRACT(CAST(idsCurseduca AS JSON), '$.content_id') = ?
+	`, 396)
+	if err != nil {
+		log.Fatal("Error querying database:", err)
+	}
+	defer rows.Close()
+
+	var course model.Course
+	if rows.Next() {
+		err := rows.Scan(
+			&course.ID,
+			&course.CurseducaIds,
+			&course.ValidationDays,
+		)
+		if err != nil {
+			log.Fatal("Error scanning course:", err)
+		}
+		log.Printf("INFO: Course Details - %+v\n", course)
+		log.Printf("INFO: Course Details - %+v\n", course.GetCurseducaIds().ContentId)
+		log.Printf("INFO: ValidationDays - %d\n", *course.ValidationDays)
 	}
 
 	report := curseduca.Report{
@@ -42,10 +72,11 @@ func main() {
 		},
 		SituationID:       1,
 		Progress:          100,
-		ExpiresAt:         expiresAt,
 		ExpirationEnabled: true,
 		Integration:       "Gratuito",
 	}
+
+	expiresAt := utils.CalculateExpirationDate(report.FinishedAt, course.ValidationDays)
 
 	cert := model.Certificate{
 		ReportId:          report.ID,
@@ -56,7 +87,7 @@ func main() {
 		StudentId:         report.Member.ID,
 		StudentName:       report.Member.Name,
 		StudentEmail:      report.Member.Email,
-		ExpiresAt:         report.ExpiresAt,
+		ExpiresAt:         expiresAt,
 		ExpirationEnabled: report.ExpirationEnabled,
 	}
 	cert.GenerateID()
@@ -135,6 +166,24 @@ func main() {
 				File: fontMont,
 			},
 			Value: formattedFinishedAt,
+		},
+	}, {
+		Key: "EXPIRES_AT",
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 960,
+				Y: 720,
+			},
+			Font: imgDraw.Font{
+				Size: 35.0,
+				File: fontMont,
+			},
+			Value: func() string {
+				if expiresAt == "" {
+					return ""
+				}
+				return "Data de expiração:       " + expiresAt
+			}(),
 		},
 	}, {
 		Key: "SIGNATURE",

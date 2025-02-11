@@ -123,6 +123,24 @@ func handlerGenerator(ev events.SQSEvent) error {
 			Value: formattedFinishedAt,
 		},
 	}, {
+		Key: "EXPIRES_AT",
+		Text: imgDraw.FieldText{
+			Position: imgDraw.Position{
+				X: 960,
+				Y: 720,
+			},
+			Font: imgDraw.Font{
+				Size: 35.0,
+				File: fontMont,
+			},
+			Value: func() string {
+				if report.ExpiresAt == "" {
+					return ""
+				}
+				return "Data de expiração:       " + report.ExpiresAt
+			}(),
+		},
+	}, {
 		Key: "SIGNATURE",
 		Text: imgDraw.FieldText{
 			Position: imgDraw.Position{
