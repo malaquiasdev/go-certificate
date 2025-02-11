@@ -85,11 +85,11 @@ func LoadConfig(isLocal bool) Config {
 			BlockList:    utils.GetEnv("CURSEDUCA_BLOCK_LIST", ""),
 		},
 		Mysql: Mysql{
-			Username: utils.GetEnvLocal("MYSQL_USERNAME", ""),
-			Host:     utils.GetEnvLocal("MYSQL_HOST", ""),
-			Password: utils.GetEnvLocal("MYSQL_PASSWORD", ""),
-			Port:     utils.GetEnvLocal("MYSQL_PORT", ""),
-			Dbname:   utils.GetEnvLocal("MYSQL_DATABASE", ""),
+			Username: utils.GetEnv("MYSQL_USERNAME", ""),
+			Host:     utils.GetEnv("MYSQL_HOST", ""),
+			Password: utils.GetEnv("MYSQL_PASSWORD", ""),
+			Port:     utils.GetEnv("MYSQL_PORT", ""),
+			Dbname:   utils.GetEnv("MYSQL_DATABASE", ""),
 		},
 		UrlPrefix: utils.GetEnv("CERTIFICATE_URL_PREFIX", ""),
 	}
