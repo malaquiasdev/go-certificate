@@ -84,14 +84,6 @@ func handlerImporter(ev events.CloudWatchAlarmTrigger) error {
 		report.Member.Document = member.Document
 		report.ExpiresAt = utils.CalculateExpirationDate(report.FinishedAt, course.ValidationDays)
 
-		member, err := cur.GetMemberById(report.Member.ID)
-		if err != nil {
-			log.Fatal("ERROR: failed to get member", err)
-			return err
-		}
-
-		report.Member.Document = member.Document
-
 		jsonData, err := json.Marshal(report)
 		if err != nil {
 			log.Fatal(err)
