@@ -14,6 +14,8 @@ require (
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	software.sslmate.com/src/go-pkcs12 v0.5.0 // indirect
 )
 
 require (

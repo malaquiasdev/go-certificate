@@ -10,6 +10,12 @@ type AWS struct {
 	BucketName        string
 	DynamoTableName   string
 	IndexerQueueUrl   string
+	Pkcs              Pkcs
+}
+
+type Pkcs struct {
+	FileKey  string
+	Password string
 }
 
 type Curseduca struct {
@@ -47,6 +53,10 @@ func LoadConfig(isLocal bool) Config {
 				BucketName:        utils.GetEnvLocal("AWS_BUCKET_NAME", ""),
 				DynamoTableName:   utils.GetEnvLocal("AWS_DYNAMO_TABLE_NAME", ""),
 				IndexerQueueUrl:   utils.GetEnvLocal("AWS_INDEXER_QUEUE_URL", ""),
+				Pkcs: Pkcs{
+					FileKey:  utils.GetEnvLocal("PKCS_FILE_KEY", ""),
+					Password: utils.GetEnvLocal("PKCS_PASSWORD", ""),
+				},
 			},
 			Curseduca: Curseduca{
 				ClassBaseUrl: utils.GetEnvLocal("CLASS_CURSEDUCA_BASE_URL", ""),
@@ -75,6 +85,10 @@ func LoadConfig(isLocal bool) Config {
 			BucketName:        utils.GetEnv("AWS_BUCKET_NAME", ""),
 			DynamoTableName:   utils.GetEnv("AWS_DYNAMO_TABLE_NAME", ""),
 			IndexerQueueUrl:   utils.GetEnv("AWS_INDEXER_QUEUE_URL", ""),
+			Pkcs: Pkcs{
+				FileKey:  utils.GetEnv("PKCS_FILE_KEY", ""),
+				Password: utils.GetEnv("PKCS_PASSWORD", ""),
+			},
 		},
 		Curseduca: Curseduca{
 			ClassBaseUrl: utils.GetEnv("CLASS_CURSEDUCA_BASE_URL", ""),

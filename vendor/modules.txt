@@ -93,6 +93,9 @@ github.com/pkg/errors
 ## explicit; go 1.13
 github.com/signintech/gopdf
 github.com/signintech/gopdf/fontmaker/core
+# golang.org/x/crypto v0.11.0
+## explicit; go 1.17
+golang.org/x/crypto/pbkdf2
 # golang.org/x/image v0.15.0
 ## explicit; go 1.18
 golang.org/x/image/draw
@@ -107,3 +110,7 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
+# software.sslmate.com/src/go-pkcs12 v0.5.0
+## explicit; go 1.19
+software.sslmate.com/src/go-pkcs12
+software.sslmate.com/src/go-pkcs12/internal/rc2

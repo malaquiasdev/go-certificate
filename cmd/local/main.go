@@ -141,6 +141,16 @@ func main() {
 		return
 	}
 
+	rsaKey, certificate, hash, err := b.GetPkcs(c.AWS.Pkcs.FileKey, c.AWS.BucketName, c.AWS.Pkcs.Password)
+	if err != nil {
+		log.Fatal("ERROR: GET certificate", err)
+		return
+	}
+
+	log.Println(rsaKey)
+	log.Println(certificate)
+	log.Println(hash)
+
 	img, err := imgDraw.Png(coverImg, []imgDraw.DrawParams{{
 		Key: "FULL_NAME",
 		Text: imgDraw.FieldText{
