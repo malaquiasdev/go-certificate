@@ -17,6 +17,7 @@ import (
 
 func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	log.Println(req.MultiValueQueryStringParameters["email"])
+	log.Println(req.MultiValueQueryStringParameters["createdAt"])
 	c := config.LoadConfig(false)
 	db, err := db.NewClient(c.AWS)
 	if err != nil {
@@ -30,6 +31,10 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 	filter := expression.Name("publicUrl").NotEqual(expression.Value(""))
 	if value, exist := req.MultiValueQueryStringParameters["email"]; exist {
 		filter.And(expression.Name("studentEmail").Equal(expression.Value(value[0])))
+	}
+
+	if value, exist := req.MultiValueQueryStringParameters["createdAt"]; exist {
+		filter = filter.And(expression.Name("createdAt").GreaterThanEqual(expression.Value(value[0])))
 	}
 
 	condition, err := expression.NewBuilder().WithFilter(filter).Build()
@@ -67,7 +72,6 @@ func handleGetCertificates(req events.APIGatewayProxyRequest) (events.APIGateway
 				ExpiresAt:  expiresAtFormatted,
 				URL:        cert.PublicUrl,
 			})
-
 		}
 	}
 

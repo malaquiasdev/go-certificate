@@ -18,6 +18,7 @@ type DynamoDB struct {
 
 type IDynamoDB interface {
 	ScanAll(condition expression.Expression, tableName string, lastEvaluatedKey map[string]*dynamodb.AttributeValue) (response *dynamodb.ScanOutput, err error)
+	Scan(condition expression.Expression, tableName string, lastEvaluatedKey map[string]*dynamodb.AttributeValue) (response *dynamodb.ScanOutput, err error)
 	GetOne(condition map[string]interface{}, tableName string) (response *dynamodb.GetItemOutput, err error)
 	Query(condition expression.Expression, indexName string, tableName string) (response *dynamodb.QueryOutput, err error)
 	CreateOrUpdate(entity interface{}, tableName string) (response *dynamodb.PutItemOutput, err error)
@@ -40,6 +41,50 @@ func NewClient(c config.AWS) (IDynamoDB, error) {
 }
 
 func (db *DynamoDB) ScanAll(condition expression.Expression, tableName string, lastEvaluatedKey map[string]*dynamodb.AttributeValue) (response *dynamodb.ScanOutput, err error) {
+	var accumulatedResults []*dynamodb.ScanOutput
+	remainingItems := int64(300)
+	input := &dynamodb.ScanInput{
+		ExpressionAttributeNames:  condition.Names(),
+		ExpressionAttributeValues: condition.Values(),
+		FilterExpression:          condition.Filter(),
+		ProjectionExpression:      condition.Projection(),
+		ExclusiveStartKey:         lastEvaluatedKey,
+		TableName:                 aws.String(tableName),
+	}
+
+	for remainingItems > 0 {
+		result, err := db.connection.Scan(input)
+		if err != nil {
+			return nil, err
+		}
+
+		accumulatedResults = append(accumulatedResults, result)
+		remainingItems -= int64(len(result.Items))
+
+		if result.LastEvaluatedKey == nil {
+			break
+		}
+
+		input.ExclusiveStartKey = result.LastEvaluatedKey
+	}
+
+	finalResult := &dynamodb.ScanOutput{
+		Items:            []map[string]*dynamodb.AttributeValue{},
+		Count:            aws.Int64(0),
+		ScannedCount:     aws.Int64(0),
+		LastEvaluatedKey: accumulatedResults[len(accumulatedResults)-1].LastEvaluatedKey,
+	}
+
+	for _, result := range accumulatedResults {
+		finalResult.Items = append(finalResult.Items, result.Items...)
+		*finalResult.Count += *result.Count
+		*finalResult.ScannedCount += *result.ScannedCount
+	}
+
+	return finalResult, nil
+}
+
+func (db *DynamoDB) Scan(condition expression.Expression, tableName string, lastEvaluatedKey map[string]*dynamodb.AttributeValue) (response *dynamodb.ScanOutput, err error) {
 	input := &dynamodb.ScanInput{
 		ExpressionAttributeNames:  condition.Names(),
 		ExpressionAttributeValues: condition.Values(),
