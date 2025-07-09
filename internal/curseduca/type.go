@@ -52,7 +52,7 @@ type Report struct {
 	FinishedAt        *string           `json:"finishedAt"` // Pointer for handling null value
 	Member            EnrollmentsMember `json:"member"`
 	SituationID       int               `json:"situationId"`
-	Progress          int               `json:"progress"`
+	Progress          float64           `json:"progress"`
 	ExpiresAt         string            `json:"expiresAt,omitempty"`
 	ExpirationEnabled bool              `json:"expirationEnabled"`
 	Integration       string            `json:"integration"`

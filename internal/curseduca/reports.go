@@ -5,10 +5,12 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func (c *Curseduca) GetReportEnrollment(limit int) (ReportEnrollment, error) {
-	url := c.httpConfig.classBaseUrl + "/reports/enrollments?" + "limit=" + strconv.Itoa(limit)
+	startDate := time.Now().AddDate(0, 0, -90).Format("2006-01-02")
+	url := c.httpConfig.classBaseUrl + "/enrollments?" + "limit=" + strconv.Itoa(limit) + "&startDate=" + startDate
 
 	client := &http.Client{}
 
